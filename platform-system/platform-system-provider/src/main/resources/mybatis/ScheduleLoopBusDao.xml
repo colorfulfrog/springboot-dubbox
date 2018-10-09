@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.ScheduleLoopBusDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleLoopBus">
+		select * from bs_schedule_loop_bus
+		<where>
+			<!-- 条件 -->
+		</where>
+	</select>
+</mapper>

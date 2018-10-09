@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<excels>
+	<!-- 车辆导出 -->
+	<excel id="ScheduleLoopExport" class="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleLoop" sheetname="班次循环导出" defaultColumnWidth="5000" enableStyle="true">
+		<!-- <field name="id" title="id"/> -->
+		<field name="companyName" title="所属单位"/>
+		<field name="lineName" title="线路名称"/>
+		<field name="startDate" title="开始日期" pattern="yyyy-MM-dd"/>
+		<field name="endDate" title="结束日期" pattern="yyyy-MM-dd"/>
+		<field name="loopType" title="循环类型" cellValueConverter="com.yxhl.stationbiz.web.consumer.excel.ScheduleLoopTypeConverter"/>
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<excel id="CompanyExport" class="com.yxhl.stationbiz.system.domain.entity.sys.Company" sheetname="单位循环导出" defaultColumnWidth="5000" enableStyle="true">
+		<!-- <field name="id" title="id"/> -->
+		<field name="companyCode" title="编码"/>
+		<field name="shortName" title="简称"/>
+		<field name="fullName" title="全称"/>
+		<field name="TypeName" title="单位类型"/>
+		<field name="shortSpell" title="简拼"/>
+		<field name="areaName" title="所属区域"/>
+		<field name="contact" title="联系人"/>
+		<field name="telephone" title="联系电话"/>
+		<field name="createName" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateName" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+</excels>

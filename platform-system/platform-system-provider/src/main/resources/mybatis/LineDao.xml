@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.LineDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Line">
+	SELECT bl.*,sc.full_name,bs.station_name start_state,bs2.station_name end_state, su.user_name creator,su1.user_name updater FROM bs_line bl
+	LEFT JOIN sys_company sc ON bl.comp_id=sc.id
+	LEFT JOIN bs_station bs ON bs.id=bl.start_state_id
+	LEFT JOIN bs_station bs2 ON bs2.id=bl.end_state_id
+	LEFT JOIN sys_user su ON su.id=bl.create_by
+	LEFT JOIN sys_user su1 ON su1.id=bl.update_by
+		<where>
+			<if test="orgId != null and orgId != '' ">
+				  AND bl.org_id=#{orgId}
+			</if>
+			<if test="compId != null and compId != '' ">
+				 AND bl.comp_id=#{compId}
+			</if>
+			<if test="id != null and id != '' ">
+				 AND bl.id=#{id}
+			</if>
+			<if test="rangeType != null and rangeType != '' ">
+				 AND bl.range_type=#{rangeType}
+			</if>
+			<if test="startStateId != null and startStateId != '' ">
+				 AND bl.start_state_id=#{startStateId}
+			</if>
+			<if test="endStateId != null and endStateId != '' ">
+				 AND bl.end_state_id=#{endStateId}
+			</if>
+			<if test="startState != null and startState != '' ">
+				 AND INSTR(bs.station_name,#{startState})>0
+			</if>
+			<if test="endState != null and endState != '' ">
+			    AND INSTR(bs2.station_name,#{endState})>0
+			</if>
+			<if test="lineName != null and lineName != '' ">
+				 AND INSTR(bl.line_name,#{lineName})>0 
+			</if>
+			<if test="fullName != null and fullName != '' ">
+				 AND INSTR(sc.full_name,#{fullName})>0
+			</if>						
+		</where>
+		order by create_time desc
+	</select>
+	
+	
+	<select id="selById" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Line">
+	SELECT bl.*,sc.full_name,bs.station_name start_state,bs2.station_name end_state,su.user_name creator,su1.user_name updater
+	,bs.station_name start_state 
+	,bs2.station_name end_state
+	FROM bs_line bl
+	LEFT JOIN sys_company sc ON bl.comp_id=sc.id
+	LEFT JOIN bs_station bs ON bs.id=bl.start_state_id
+	LEFT JOIN bs_station bs2 ON bs2.id=bl.end_state_id
+	LEFT JOIN sys_user su ON su.id=bl.create_by
+	LEFT JOIN sys_user su1 ON su1.id=bl.update_by
+		<where>
+		    <if test="id != null">
+				  AND bl.id=#{id}
+			</if>
+					
+		</where>
+	</select>
+	
+</mapper>

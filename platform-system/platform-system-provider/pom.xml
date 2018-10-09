@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.yxhl</groupId>
+		<artifactId>platform-system</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <artifactId>platform-system-provider</artifactId>
+	<packaging>jar</packaging>
+
+    <name>platform-system-provider</name>
+    <url>http://maven.apache.org</url>
+    <properties>
+        <start-class>com.yxhl.stationbiz.system.provider.SysProviderApplication</start-class>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yxhl</groupId>
+            <artifactId>platform-system-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+       <dependency>
+            <groupId>com.yxhl</groupId>
+            <artifactId>platform_common_redis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yxhl</groupId>
+            <artifactId>platform_common_service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-tomcat</artifactId>
+		   <scope>provided</scope>
+		</dependency>
+	    <dependency>
+	      <groupId>javax.mail</groupId>
+	      <artifactId>mail</artifactId>
+	      <version>1.4.7</version>
+	      </dependency>
+	    <dependency>
+		    <groupId>net.sourceforge</groupId>
+		    <artifactId>mpxj</artifactId>
+		    <version>4.3.0</version>
+		</dependency>
+	    <dependency>
+		    <groupId>net.sf.jacob-project</groupId>
+		    <artifactId>jacob</artifactId>
+		    <version>1.14.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+		<dependency>
+		    <groupId>org.freemarker</groupId>
+		    <artifactId>freemarker</artifactId>
+		</dependency>
+    </dependencies>
+
+    <build>
+        <finalName>platform-system-provider</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

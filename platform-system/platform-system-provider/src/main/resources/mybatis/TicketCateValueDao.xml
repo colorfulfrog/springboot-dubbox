@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.schedule.TicketCateValueDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.TicketCateValue">
+		select * from bs_ticket_cate_value
+		<where>
+			<!-- 条件 -->
+		</where>
+		order by create_time desc
+	</select>
+
+	<select id="selPriceValue"
+		resultType="com.yxhl.stationbiz.system.domain.entity.schedule.TicketCateValue">
+	SELECT
+	c.id,
+	c.`ticket_cate_name`,
+	v.`ticket_value`,
+	v.`price_id` ,
+	c.field_name,
+	v.ticket_cate_id
+	FROM
+	bs_ticket_category c
+	LEFT JOIN bs_ticket_cate_value v
+	ON c.`id` = v.`ticket_cate_id` 
+		<where>
+			v.price_id  in(
+			<foreach collection="ids" item="item" separator=",">
+            #{item}
+            </foreach>
+			)
+			 AND v.price_tbl_type=#{priceTblType}
+			<if test="orgId !=null and orgId !=''">
+				and c.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+				and c.comp_id=#{compId}
+			</if>
+			<!-- 条件 -->
+		</where>
+		order by c.id desc
+	</select>
+		<select id="selPriceValueForType"
+		resultType="com.yxhl.stationbiz.system.domain.entity.schedule.TicketCateValue">
+	SELECT
+	c.id,
+	c.`ticket_cate_name`,
+	v.`ticket_value`,
+	v.`price_id` ,
+	c.field_name,
+	v.ticket_cate_id
+	FROM
+	bs_ticket_category c
+	LEFT JOIN bs_ticket_cate_value v
+	ON c.`id` = v.`ticket_cate_id` 
+		<where>
+			v.price_id =#{priceId}
+			AND v.price_tbl_type=#{priceTblType}
+			AND v.ticket_cate_id=#{ticketCateId}
+			<if test="orgId !=null and orgId !=''">
+				and c.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+				and c.comp_id=#{compId}
+			</if>
+			<!-- 条件 -->
+		</where>
+		order by c.id desc
+	</select>
+	
+</mapper>

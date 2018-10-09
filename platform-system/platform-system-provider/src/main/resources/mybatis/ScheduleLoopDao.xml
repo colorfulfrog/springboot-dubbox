@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.ScheduleLoopDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleLoop">
+		SELECT 
+		  s.*,
+		  l.line_name,
+		  c.full_name company_name,
+		  u1.`user_name` creator,
+		  u2.`user_name` updater 
+		FROM
+		  bs_schedule_loop s
+		  LEFT JOIN bs_line l ON s.line_id = l.`id`
+		  LEFT JOIN sys_company c ON s.comp_id = c.id
+		  LEFT JOIN sys_user u1 ON s.`create_by` = u1.`id` 
+		  LEFT JOIN sys_user u2 ON s.`update_by` = u2.`id`
+		<where>
+			<!-- 条件 -->
+			<if test="lineId !=null and lineId !=''">AND l.`id`= #{lineId}</if>
+			<if test="companyName !=null and companyName !=''">
+				AND INSTR(c.full_name,#{companyName})>0
+			</if>
+			<if test="startDate !=null">
+		         <![CDATA[ and s.start_date  <= #{startDate}  ]]>
+		    </if>
+		    <if test="endDate !=null"  >
+		         <![CDATA[ and s.end_date >=  #{endDate}  ]]>
+		    </if>
+			<if test="startDateBegin !=null">
+		         <![CDATA[ and s.start_date  >= #{startDateBegin}  ]]>
+		    </if>
+		    <if test="startDateEnd !=null"  >
+		         <![CDATA[ and s.start_date <=  #{startDateEnd}  ]]>
+		    </if>
+		    <if test="endDateBegin !=null">
+		         <![CDATA[ and s.end_date  >=  #{endDateBegin}  ]]>
+		    </if>
+		    <if test="endDateEnd !=null"  >
+		         <![CDATA[ and s.end_date <=  #{endDateEnd}  ]]>
+		    </if>
+		    <if test="orgId !=null and orgId !=''">
+		  		and s.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+		  		and s.comp_id=#{compId}
+			</if>
+	    </where>
+	    order by s.create_time desc
+	</select>
+	
+	<select id="selAllScheduleLoop" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleLoop">
+		SELECT 
+		  l.`start_date`,
+		  l.`end_date`,
+		  l.`loop_type`,
+		  t.id tpl_id,
+		  t.`bus_code`,
+		  t.`start_time`,
+		  t.`last_departure_time`,
+		  a.`id` line_id,
+		  a.`line_name`,
+		  t.`org_id`,
+ 		  t.`comp_id`,
+		  t.`persons`,
+		  t.`run_flow_flag`
+		FROM
+		  `bs_schedule_loop` l,
+		  `bs_schedule_loop_bus` b,
+		   bs_schedule_bus_tpl t,
+		  `bs_line` a
+		WHERE l.`id` = b.`schedule_loop_id` 
+		  AND b.`schedule_bus_id` = t.`id` 
+		  AND t.`line_id` = a.id 
+		  AND t.run_flow_flag = 0
+		  <![CDATA[AND l.`start_date` <= CURDATE() AND l.`end_date` >= CURDATE()]]>
+		ORDER BY l.`start_date`
+	</select>
+	
+	<select id="getScheduleLoopById" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleLoop">
+		SELECT lo.*,li.`line_name` FROM bs_schedule_loop lo LEFT JOIN bs_line li ON lo.`line_id`=li.`id` WHERE lo.`id`=#{id}
+	</select>
+	
+	<!-- 查询导出数据 -->
+	<select id="exportData" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleLoop">
+		SELECT 
+		  s.*,
+		  l.line_name,
+		  c.full_name company_name,
+		  u1.`user_name` creator,
+		  u2.`user_name` updater 
+		FROM
+		  bs_schedule_loop s
+		  LEFT JOIN bs_line l ON s.line_id = l.`id`
+		  LEFT JOIN sys_company c ON s.comp_id = c.id
+		  LEFT JOIN sys_user u1 ON s.`create_by` = u1.`id` 
+		  LEFT JOIN sys_user u2 ON s.`update_by` = u2.`id`
+		<where>
+			<!-- 条件 -->
+			<if test="lineId !=null and lineId !=''">AND l.`id`= #{lineId}</if>
+			<if test="companyName !=null and companyName !=''">
+				AND INSTR(c.full_name,#{companyName})>0
+			</if>
+			<if test="startDate !=null">
+		         <![CDATA[ and s.start_date  <= #{startDate}  ]]>
+		    </if>
+		    <if test="endDate !=null"  >
+		         <![CDATA[ and s.end_date >=  #{endDate}  ]]>
+		    </if>
+			<if test="startDateBegin !=null">
+		         <![CDATA[ and s.start_date  >= #{startDateBegin}  ]]>
+		    </if>
+		    <if test="startDateEnd !=null"  >
+		         <![CDATA[ and s.start_date <=  #{startDateEnd}  ]]>
+		    </if>
+		    <if test="endDateBegin !=null">
+		         <![CDATA[ and s.end_date  >=  #{endDateBegin}  ]]>
+		    </if>
+		    <if test="endDateEnd !=null"  >
+		         <![CDATA[ and s.end_date <=  #{endDateEnd}  ]]>
+		    </if>
+		    <if test="orgId !=null and orgId !=''">
+		  		and s.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+		  		and s.comp_id=#{compId}
+			</if>
+	    </where>
+	    order by s.create_time desc
+	</select>
+	
+	<!-- 排班-根据班次模板查询班次循环配置 -->
+	<select id="selScheduleLoop" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleLoop">
+		SELECT 
+		  l.`start_date`,
+		  l.`end_date`,
+		  l.`loop_type`,
+		  t.id tpl_id,
+		  t.`bus_code`,
+		  t.`start_time`,
+		  t.`last_departure_time`,
+		  a.`id` line_id,
+		  a.`line_name`,
+		  t.`org_id`,
+ 		  t.`comp_id`,
+		  t.`persons`,
+		  t.`run_flow_flag`
+		FROM
+		  `bs_schedule_loop` l,
+		  `bs_schedule_loop_bus` b,
+		   bs_schedule_bus_tpl t,
+		  `bs_line` a
+		WHERE l.`id` = b.`schedule_loop_id` 
+		  AND b.`schedule_bus_id` = t.`id` 
+		  AND t.`line_id` = a.id 
+		  <if test="tplId !=null and tplId !=''">
+		    AND b.`schedule_bus_id`=#{tplId}
+		  </if>
+		  <if test="lineId !=null and lineId !=''">
+		    AND l.`line_id`=#{lineId}
+		  </if>
+		  <if test="compId !=null and compId !=''">
+		    AND l.`comp_id`=#{compId}
+		  </if>
+	</select>
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.DriverVehicleDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.DriverVehicle">
+	   SELECT * FROM (
+	   	SELECT DISTINCT a.*,
+			 (SELECT 
+				  u1.`user_name` creator
+				  FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id` 
+				  LEFT JOIN sys_user u1 
+				    ON dv.`create_by` = u1.`id`  
+				  WHERE dv.`driver_id` = a.driver_id AND dv.`create_time`= (SELECT 
+				  MIN(dv.`create_time`)
+				    FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id`
+				   WHERE dv.`driver_id` = a.driver_id) LIMIT 0,1
+			 ) creator,	<!-- 创建人名称-->
+			(SELECT 
+				  u2.`user_name` updater 
+				FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id` 
+				  LEFT JOIN sys_user u2 
+				    ON dv.`update_by` = u2.`id` 
+				WHERE dv.`driver_id` = a.driver_id AND dv.`update_time`= (SELECT 
+				  MAX(dv.`update_time`)
+				FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id`
+				WHERE dv.`driver_id` = a.driver_id) LIMIT 0,1
+			) updater 	<!-- 修改人-->
+			 FROM 
+			   		(
+						SELECT  bd.driver_name,bd.bind_time as create_time,bd.update_bind_time as update_time,s.full_name,bd.identity_card,bd.id AS driver_id,s.id as comp_id,
+				 		(SELECT GROUP_CONCAT(bv.car_no) FROM bs_driver_vehicle bdv ,bs_vehicle bv 
+				 		 	where bv.id=bdv.vehicle_id AND bdv.driver_id = bd.id  ORDER BY bdv.create_time DESC) car_no 
+				       		FROM bs_driver bd
+						 	JOIN sys_company s ON bd.comp_id = s.id
+					 ) a
+				 LEFT JOIN bs_driver_vehicle bsdv ON bsdv.driver_id = a.driver_id
+			) zj	
+		<where>
+		    and zj.car_no != "null"
+			<if test="driverName != null and driverName != '' ">
+				and zj.driver_name like concat('%',#{driverName},'%')
+			</if>
+			<if test="compId != null and compId != '' ">
+				and zj.comp_id =#{compId}
+			</if>
+			<if test="carNo != null and carNo != '' ">
+				and zj.car_no like concat('%',#{carNo},'%')
+			</if>
+		</where>
+		ORDER BY zj.create_time DESC
+	</select>
+	
+	<select id="getOne" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.DriverVehicle">
+		SELECT DISTINCT a.* FROM 
+		  	(
+				SELECT  bd.driver_name,bd.id AS driver_id,s.id AS comp_id,s.full_name,
+			 		 (SELECT GROUP_CONCAT(bv.car_no) FROM bs_driver_vehicle bdv ,bs_vehicle bv WHERE  bv.id=bdv.vehicle_id AND bdv.driver_id = bd.id ORDER BY bdv.create_time DESC) car_no,
+			 		 (SELECT GROUP_CONCAT(bv.id) FROM bs_driver_vehicle bdv ,bs_vehicle bv WHERE bv.id=bdv.vehicle_id AND bdv.driver_id = bd.id) vehicle_id 
+		       		FROM bs_driver bd
+				JOIN sys_company s ON bd.comp_id = s.id
+			) a
+			LEFT JOIN bs_driver_vehicle bsdv ON bsdv.driver_id = a.driver_id
+		WHERE a.car_no != "null"
+		AND a.driver_id = #{driverId}
+	</select>
+	
+	<!-- 根据司机id删除 -->
+	<delete id="deleteBydrId" parameterType="java.util.List">
+		delete from bs_driver_vehicle where driver_id=#{sjId} 
+	</delete>
+	
+	<select id="exportData" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.DriverVehicle">
+	   SELECT * FROM (
+	   	SELECT DISTINCT a.*,
+			 (SELECT 
+				  u1.`user_name` creator
+				  FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id` 
+				  LEFT JOIN sys_user u1 
+				    ON dv.`create_by` = u1.`id`  
+				  WHERE dv.`driver_id` = a.driver_id AND dv.`create_time`= (SELECT 
+				  MIN(dv.`create_time`)
+				    FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id`
+				   WHERE dv.`driver_id` = a.driver_id) LIMIT 0,1
+			 ) creator,	<!-- 创建人名称-->
+			(SELECT 
+				  u2.`user_name` updater 
+				FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id` 
+				  LEFT JOIN sys_user u2 
+				    ON dv.`update_by` = u2.`id` 
+				WHERE dv.`driver_id` = a.driver_id AND dv.`update_time`= (SELECT 
+				  MAX(dv.`update_time`)
+				FROM
+				  bs_driver d 
+				  INNER JOIN bs_driver_vehicle dv 
+				    ON d.id = dv.`driver_id`
+				WHERE dv.`driver_id` = a.driver_id) LIMIT 0,1
+			) updater 	<!-- 修改人-->
+			 FROM 
+			   		(
+						SELECT  bd.driver_name,bd.bind_time as create_time,bd.update_bind_time as update_time,s.full_name,bd.identity_card,bd.id AS driver_id,s.id as comp_id,
+				 		(SELECT GROUP_CONCAT(bv.car_no) FROM bs_driver_vehicle bdv ,bs_vehicle bv 
+				 		 	where bv.id=bdv.vehicle_id AND bdv.driver_id = bd.id  ORDER BY bdv.create_time DESC) car_no 
+				       		FROM bs_driver bd
+						 	JOIN sys_company s ON bd.comp_id = s.id
+					 ) a
+				 LEFT JOIN bs_driver_vehicle bsdv ON bsdv.driver_id = a.driver_id
+			) zj	
+		<where>
+		    and zj.car_no != "null"
+			<if test="driverName != null and driverName != '' ">
+				and zj.driver_name like concat('%',#{driverName},'%')
+			</if>
+			<if test="compId != null and compId != '' ">
+				and zj.comp_id =#{compId}
+			</if>
+			<if test="carNo != null and carNo != '' ">
+				and zj.car_no like concat('%',#{carNo},'%')
+			</if>
+		</where>
+		ORDER BY zj.create_time DESC
+	</select>
+</mapper>

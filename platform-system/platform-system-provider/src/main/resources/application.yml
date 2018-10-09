@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: platform-system-provider
+  profiles:
+    active: local
+    
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd
+    
+mybatis:
+  typeAliasesPackage: com.yxhl.stationbiz.system.domain
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:mybatis/*.xml

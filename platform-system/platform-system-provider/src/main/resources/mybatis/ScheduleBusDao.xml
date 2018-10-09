@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.schedule.ScheduleBusDao">
+	<!-- 报班班次查询 -->
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.ScheduleBus">
+		SELECT 
+		  b.*,
+		  s1.station_name start_station,
+		  s2.station_name end_station,
+		  s3.station_name report_station,
+		  (SELECT station_name FROM bs_station WHERE id=#{reportStaId}) current_station,
+		  u1.`user_name` creator,
+		  u2.`user_name` updater,
+		  d1.driver_name mainDriverName,
+		  d2.driver_name backupDriverName,
+		  tc.gate_name ticketGateName,
+		  be.entrance_name busEntranceName,
+		  l.line_mileage
+		FROM
+		  `bs_schedule_bus` b 
+		  LEFT JOIN `bs_line` l 
+		    ON b.line_id = l.`id` 
+		  LEFT JOIN `bs_station` s1 
+		    ON l.start_state_id = s1.id 
+		  LEFT JOIN `bs_station` s2 
+		    ON l.end_state_id = s2.id 
+		  LEFT JOIN `bs_station` s3 
+		    ON b.report_sta_id = s3.id 
+		  LEFT JOIN `sys_company` c 
+		    ON b.`comp_id` = c.id
+		  LEFT JOIN sys_user u1 
+		    ON b.`create_by` = u1.`id` 
+		  LEFT JOIN sys_user u2 
+		    ON b.`update_by` = u2.`id`
+		  LEFT JOIN `bs_driver` d1
+		    ON b.main_driver_id=d1.id
+		  LEFT JOIN `bs_driver` d2
+		    ON b.backup_driver_id=d2.id
+		  LEFT JOIN `bs_schedule_bus_tpl` tpl
+		    ON b.`schedule_tpl_id`=tpl.id
+		  LEFT JOIN `bs_ticket_gate` tc
+		    ON tpl.ticket_gate_id=tc.id
+		  LEFT JOIN `bs_bus_entrance` be
+		    ON tpl.bus_entrance_id=be.id
+		<where>
+			<if test="runDate !=null">
+				b.run_date = #{runDate} 
+			</if>
+			<!-- 报班车站 -->
+			<!-- <if test="reportStation !=null and reportStation != ''">
+		  		AND INSTR(s3.station_name, #{reportStation}) > 0 
+			</if> -->
+			<if test="lineId !=null and lineId != ''">
+		  		AND b.line_id=#{lineId}
+			</if>
+			<if test="lineName !=null and lineName != ''">
+		  		AND INSTR(l.line_name, #{lineName}) > 0 
+			</if>
+			<if test="companyName !=null and companyName != ''">
+		  		AND (
+				    INSTR(c.short_name, #{companyName}) > 0 
+				    OR INSTR(c.full_name, #{companyName}) > 0 
+				    OR INSTR(c.short_spell, #{companyName}) > 0
+				  ) 
+			</if>
+			<!-- 车牌号 -->
+			<if test="reportCarNo !=null and reportCarNo != ''">
+		  		AND INSTR(b.report_car_no, #{reportCarNo}) > 0
+			</if>
+			<if test="busCode !=null and busCode != ''">
+		  		AND INSTR(b.bus_code, #{busCode}) > 0
+			</if>
+			<if test="busStatus !=null">
+		  		AND b.bus_status=#{busStatus}
+			</if>
+			<if test="checkStatus !=null">
+		  		AND b.check_status=#{checkStatus}
+			</if>
+			<if test="reportStatus !=null">
+		  		AND b.report_status=#{reportStatus}
+			</if>
+			<if test="saleStatus !=null">
+		  		AND b.sale_status=#{saleStatus}
+			</if>
+			<!-- 班次类型(多选)：流水、固定 -->
+			<if test="busTypeParam !=null and busTypeParam !=''">
+		  		AND INSTR(#{busTypeParam},b.bus_type)>0
+			</if>
+			<!-- 班次类型(单选)：流水、固定 -->
+			<if test="busType !=null and busType !=''">
+		  		AND bus_type=#{busType}
+			</if>
+			<!-- 查询班次停靠点经过报班车站的班次 -->
+			<if test="reportStaId !=null and reportStaId !=''">
+		  		and exists 
+			  (SELECT 
+			    st.id,
+			    st.station_name 
+			  FROM
+			    `bs_schedule_bus_site` bs,
+			    `bs_station` st 
+			  WHERE bs.station_id = st.id 
+			    AND bs.schedule_bus_tpl_id = b.`schedule_tpl_id` 
+			    AND st.id = #{reportStaId} 
+			  )
+			</if>
+			<if test="orgId !=null and orgId !=''">
+		  		and b.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+		  		and b.comp_id=#{compId}
+			</if>
+		</where> 
+		order by b.create_time desc
+	</select>
+	
+	<!-- 排班班次查询 -->
+	<select id="selSchedulePageList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.ScheduleBus">
+		SELECT 
+		  b.*,
+		  c.`full_name` companyName,
+		  s1.station_name start_station,
+		  s2.station_name end_station,
+		  s3.station_name report_station,
+		  d1.driver_name mainDriverName,
+		  ve.`seat_category` planCarType,
+		  (SELECT GROUP_CONCAT(s.`station_name`) FROM `bs_schedule_bus_site` bs,`bs_station` s WHERE bs.station_id=s.`id` AND bs.schedule_bus_tpl_id=b.`schedule_tpl_id` ORDER BY sort ASC) passStations,
+		  tg.gate_name ticketGateName,
+		  be.entrance_name busEntranceName
+		FROM
+		  `bs_schedule_bus` b 
+		  LEFT JOIN `bs_line` l 
+		    ON b.line_id = l.`id` 
+		  LEFT JOIN `bs_station` s1 
+		    ON l.start_state_id = s1.id 
+		  LEFT JOIN `bs_station` s2 
+		    ON l.end_state_id = s2.id 
+		  LEFT JOIN `bs_station` s3 
+		    ON b.report_sta_id = s3.id 
+		  LEFT JOIN `sys_company` c 
+		    ON b.`comp_id` = c.id 
+		  LEFT JOIN `bs_driver` d1 
+		    ON b.main_driver_id = d1.id 
+		  LEFT JOIN `bs_vehicle` ve 
+		    ON b.`plan_car_no` = ve.`car_no`
+		  LEFT JOIN `bs_ticket_gate` tg
+		    ON b.`ticket_gate_id`=tg.`id`
+		  LEFT JOIN `bs_bus_entrance` be
+		    ON b.`bus_entrance_id`=be.`id`
+		<where>
+			<if test="orgId !=null and orgId !=''">
+		  		and b.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+		  		and b.comp_id=#{compId}
+			</if>
+			<!-- 发车日期 -->
+			<if test="runDate !=null">
+				and b.run_date = #{runDate}
+			</if>
+			<if test="startDate !=null">
+				and b.run_date &gt;= #{startDate} 
+			</if>
+			<if test="endDate !=null">
+				and b.run_date &lt;= #{endDate} 
+			</if>
+			<if test="lineId !=null and lineId != ''">
+		  		AND b.line_id=#{lineId}
+			</if>
+			<if test="lineName !=null and lineName != ''">
+		  		AND INSTR(l.line_name, #{lineName}) > 0 
+			</if>
+			<if test="busCode !=null and busCode != ''">
+		  		AND INSTR(b.bus_code, #{busCode}) > 0
+			</if>
+			<!-- 营运方式 -->
+			<if test="oprMode !=null and oprMode !=''">
+		  		AND b.opr_mode=#{oprMode}
+			</if>
+			<!-- 运行区域 -->
+			<if test="runArea !=null and runArea !=''">
+		  		AND b.run_area=#{runArea}
+			</if>
+			<!-- 班次状态 -->
+			<if test="busStatus !=null">
+		  		AND b.bus_status=#{busStatus}
+			</if>
+			<!-- 过路班次 -->
+			<if test="passBusFlag !=null and passBusFlag == 1">
+		  		AND b.pass_bus_flag=#{passBusFlag}
+			</if>
+			<!-- 双程班次 -->
+			<if test="doubleBusFlag !=null and doubleBusFlag == 1">
+		  		AND b.double_bus_flag=#{doubleBusFlag}
+			</if>
+			<!-- 本站专营 -->
+			<if test="specializeFlag !=null and specializeFlag == 1">
+		  		AND b.specialize_flag=#{specializeFlag}
+			</if>
+			<!-- 发班  1已发班-->
+			<if test="runStatus !=null and runStatus == 1">
+		  		AND b.run_status=#{runStatus}
+			</if>
+			<!-- 报班 1 -->
+			<if test="reportStatus !=null and reportStatus == 1">
+		  		AND b.report_status=#{reportStatus}
+			</if>
+			<!-- 开检： 1 -->
+			<if test="checkStatus !=null and checkStatus == 1">
+		  		AND b.check_status=#{checkStatus}
+			</if>
+			<!-- 加班： 1 -->
+			<if test="overtimeBusFlag !=null and overtimeBusFlag == 1">
+		  		AND b.overtime_bus_flag=#{overtimeBusFlag}
+			</if>
+			<!-- 班次类型：流水、固定 -->
+			<if test="busType !=null and busType !=''">
+		  		AND bus_type=#{busType}
+			</if>
+			<!-- 根据始发站(发车站)查询 -->
+			<if test="startStation !=null and startStation !=''">
+		  		AND EXISTS(SELECT sta.`station_name` FROM `bs_schedule_bus_site` sbs,`bs_station` sta WHERE sbs.`station_id`=sta.id AND schedule_bus_tpl_id=b.`schedule_tpl_id` AND first_site_flag=1 AND INSTR(sta.`station_name`,#{startStation})>0)
+			</if>
+			<!-- 检票口 -->
+			<if test="ticketGateId !=null and ticketGateId !=''">
+				AND b.`ticket_gate_id`=#{ticketGateId}
+			</if>
+			<!-- 检票口 -->
+			<if test="ticketGateName !=null and ticketGateName !=''">
+				AND INSTR(tg.`gate_name`,#{ticketGateName})>0 
+			</if>
+			<!-- 乘车库 -->
+			<if test="busEntranceId !=null and busEntranceId !=''">
+				AND b.`bus_entrance_id`=#{busEntranceId}
+			</if>
+			<!-- 乘车库 -->
+			<if test="busEntranceName !=null and busEntranceName !=''">
+				AND INSTR(be.`entrance_name`,#{busEntranceName})>0
+			</if>
+		</where> 
+		order by b.create_time desc
+	</select>
+	
+	<!-- 班次检票列表 -->
+	<select id="checkBusPageList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.ScheduleBus">
+		SELECT distinct
+	    b.id,
+	    b.run_date,
+	    b.run_time,
+	    b.bus_code,
+	    ss.station_name startStation,
+	    es.station_name endStation,
+	    b.report_car_no,
+	    b.run_status,
+	    b.bus_type,
+	    (select count(1) from bs_ticket t where schedule_bus_id=b.id and t.status='1') saleCount,
+	    (select count(1) from bs_ticket t where check_schedule_bus_id = b.id and t.check_status='1') checkCount,
+	    (select count(1) from bs_ticket t where schedule_bus_id=b.id and t.status='1')-(select count(1) from bs_ticket t where check_schedule_bus_id = b.id and t.check_status='1') notCheckCount,
+	    g.gate_name ticketGateName,
+    	e.entrance_name busEntranceName
+	FROM
+	    bs_schedule_bus b
+	        LEFT JOIN
+	    bs_line l ON b.line_id = l.id
+	        LEFT JOIN
+	    bs_station ss ON l.start_state_id = ss.id
+	        LEFT JOIN
+	    bs_station es ON l.end_state_id = es.id
+	        LEFT JOIN
+	    bs_ticket ti ON b.id = ti.schedule_bus_id
+	    left join bs_ticket_gate g on b.ticket_gate_id=g.id
+    	left join bs_bus_entrance e on b.bus_entrance_id=e.id
+	    <where>
+	    	<!-- 发车日期 -->
+			<if test="runDate !=null">
+				b.run_date = #{runDate}
+			</if>
+			<!-- 检票口 -->
+			<if test="ticketGateId !=null and ticketGateId !=''">
+				AND b.`ticket_gate_id`=#{ticketGateId}
+			</if>
+			<!-- 检票口 -->
+			<!-- <if test="ticketGateName !=null and ticketGateName !=''">
+				AND INSTR(tg.`gate_name`,#{ticketGateName})>0 
+			</if> -->
+			<!-- 发车站 -->
+			<if test="startStationId !=null and startStationId !=''">
+				AND l.`start_state_id`=#{startStationId}
+			</if>
+			<!-- 终点站 -->
+			<if test="endStationId !=null and endStationId !=''">
+				AND l.`end_state_id`=#{endStationId}
+			</if>
+			<!-- 发车时间 -->
+			<if test="runTime !=null">
+				and b.run_time = #{runTime}
+			</if>
+			<!-- 班次号 -->
+			<if test="busCode !=null and busCode != ''">
+		  		AND INSTR(b.bus_code, #{busCode}) > 0
+			</if>
+			<!-- 车牌号 -->
+			<if test="reportCarNo !=null and reportCarNo != ''">
+		  		AND INSTR(b.report_car_no, #{reportCarNo}) > 0
+			</if>
+			<!-- 发班  1已发班-->
+			<if test="runFlag !=null and runFlag == 1">
+		  		AND b.run_status=1
+			</if>
+			<!-- 未发班  0未发班-->
+			<if test="notRunFlag !=null and notRunFlag == 1">
+		  		AND b.run_status=0
+			</if>
+			<!-- 报班 1 -->
+			<if test="reportFlag !=null and reportFlag == 1">
+		  		AND b.report_status=1
+			</if>
+			<!-- 已售票 1 -->
+			<if test="saleTicketFlag !=null and saleTicketFlag == 1">
+		  		and exists (select id from bs_ticket t where schedule_bus_id=b.id and t.status='1')
+			</if>
+	    </where>
+	    order by b.run_time desc
+	</select>
+	
+	<select id="selSettlementStatisticPageList" resultType="com.yxhl.stationbiz.system.domain.response.SettlementStatisticResponse">
+		SELECT
+		  b.`id`,
+		  s.`station_name`,
+		  b.triplicate_bill_num,
+		  u1.`user_name` triplicateBiller,
+		  b.`bus_code`,
+		  b.`run_date`,
+		  b.`run_time`,
+		  b.`report_car_no`,
+		  IFNULL((SELECT COUNT(1) FROM `bs_ticket` WHERE check_schedule_bus_id=b.id),0) totalPassengerCount,
+		  u2.`user_name` inspectionUser,
+		  IFNULL(c.`payment_fee`,0) paymentFee,
+		  IFNULL(c.`payment_people`,0) paymentPeople,
+		  IFNULL((SELECT SUM(price) FROM `bs_ticket` WHERE check_schedule_bus_id=b.id AND STATUS='1'),0) ticketAmount,
+		  IFNULL(((SELECT SUM(price) FROM `bs_ticket` WHERE check_schedule_bus_id=b.id AND STATUS='1')+c.`payment_fee`),0) totalAmount
+		FROM
+		  bs_schedule_bus b 
+		  LEFT JOIN `bs_station` s 
+		    ON b.`report_sta_id` = s.id 
+		  LEFT JOIN `bs_vehicle_outbound_check` c 
+		    ON b.`id` = c.`schedule_bus_id` 
+		  LEFT JOIN `sys_user` u1 
+		    ON b.triplicate_biller = u1.`id`
+		  LEFT JOIN `sys_user` u2 
+		    ON c.`create_by` = u2.`id` 
+		<where>
+			c.check_type = 2
+			<if test="stationId !=null and stationId != ''">
+		  		and b.`report_sta_id`=#{stationId}
+			</if>
+			<!-- 按日期查 -->
+			<if test='queryType == "1" and date !=null and date != ""'>
+		  		and b.`run_date`=#{date}
+			</if>
+			<!-- 按月、按时段 -->
+			<if test='queryType != "1" and startDate !=null and startDate != "" and endDate !=null and endDate != ""'>
+		  		<![CDATA[AND b.`run_date` BETWEEN #{startDate} AND #{endDate}]]>
+			</if>
+			<!-- 车牌号 -->
+			<if test="reportCarNo !=null and reportCarNo != ''">
+		  		AND INSTR(b.report_car_no, #{reportCarNo}) > 0
+			</if>
+		</where>
+	</select>
+	
+	<!-- 结算单导出查询 -->
+	<select id="expSettlementStatisticList" resultType="com.yxhl.stationbiz.system.domain.response.SettlementStatisticResponse">
+		SELECT
+		  b.`id`,
+		  s.`station_name`,
+		  b.triplicate_bill_num,
+		  u1.`user_name` triplicateBiller,
+		  b.`bus_code`,
+		  b.`run_date`,
+		  b.`run_time`,
+		  b.`report_car_no`,
+		  (SELECT COUNT(1) FROM `bs_ticket` WHERE check_schedule_bus_id=b.id) totalPassengerCount,
+		  u2.`user_name` inspectionUser,
+		  c.`payment_fee`,
+		  c.`payment_people`,
+		  (SELECT SUM(price) FROM `bs_ticket` WHERE check_schedule_bus_id=b.id AND STATUS='1') ticketAmount,
+		  ((SELECT SUM(price) FROM `bs_ticket` WHERE check_schedule_bus_id=b.id AND STATUS='1')+c.`payment_fee`) totalAmount
+		FROM
+		  bs_schedule_bus b 
+		  LEFT JOIN `bs_station` s 
+		    ON b.`report_sta_id` = s.id 
+		  LEFT JOIN `bs_vehicle_outbound_check` c 
+		    ON b.`id` = c.`schedule_bus_id` 
+		  LEFT JOIN `sys_user` u1 
+		    ON b.triplicate_biller = u1.`id`
+		  LEFT JOIN `sys_user` u2 
+		    ON c.`create_by` = u2.`id` 
+		<where>
+			c.check_type = 2
+			<if test="stationId !=null and stationId != ''">
+		  		and b.`report_sta_id`=#{stationId}
+			</if>
+			<!-- 按日期查 -->
+			<if test='queryType == "1" and date !=null and date != ""'>
+		  		and b.`run_date`=#{date}
+			</if>
+			<!-- 按月、按时段 -->
+			<if test='queryType != "1" and startDate !=null and startDate != "" and endDate !=null and endDate != ""'>
+		  		<![CDATA[AND b.`run_date` BETWEEN #{startDate} AND #{endDate}]]>
+			</if>
+			<!-- 车牌号 -->
+			<if test="reportCarNo !=null and reportCarNo != ''">
+		  		AND INSTR(b.report_car_no, #{reportCarNo}) > 0
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- 售票窗口  班次查询   -->
+	<select id="queryScheduleBusList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.ScheduleBus">
+		SELECT sb.*,bl.line_mileage,btg.gate_name ticket_gate_name,bbe.entrance_name bus_entrance_name,sbt.first_station_price,sbt.start_time, sbt.last_departure_time ,
+		(SELECT COUNT(1) FROM bs_schedule_bus_seats WHERE schedule_bus_id=sb.id AND seat_status=2) available_seats,
+		(SELECT COUNT(1) FROM bs_schedule_bus_seats WHERE schedule_bus_id=sb.id AND seat_status=5) already_seat ,
+		sbs.belong_bus_id ,sbs2.candidate_bus_id
+		FROM `bs_line` bl
+		JOIN `bs_schedule_bus` sb ON bl.id=sb.line_id
+		JOIN  `bs_schedule_bus_tpl` sbt ON sb.schedule_tpl_id=sbt.id
+		JOIN `bs_bus_entrance` bbe  ON sbt.bus_entrance_id=bbe.id
+		JOIN `bs_ticket_gate` btg ON sbt.ticket_gate_id=btg.id
+		LEFT JOIN bs_schedule_bus_stowage sbs ON sbs.belong_bus_id=sb.id
+		LEFT JOIN bs_schedule_bus_stowage sbs2 ON sbs2.candidate_bus_id=sb.id
+		<where>
+			<if test="scheduleBusId !=null and scheduleBusId != ''">
+		  		AND sb.id=#{scheduleBusId}
+			</if>
+			<if test="startStationId !=null and startStationId != ''">
+		  		AND bl.start_state_id=#{startStationId}
+			</if>
+			<if test="runDateStr !=null and runDateStr != ''">
+		  		AND sb.run_date= #{runDateStr}
+			</if>
+			 <if test="reportStaId !=null and reportStaId !=''">
+		  		AND exists 
+			  (SELECT 
+			    st.id
+			  FROM
+			    `bs_schedule_bus_site` bs,
+			    `bs_station` st 
+			  WHERE bs.station_id = st.id 
+			    AND bs.schedule_bus_tpl_id = sb.schedule_tpl_id
+			    AND st.id = #{reportStaId} 
+			  )
+			</if> 
+		</where>
+	</select>
+	
+	
+	<!-- 查询配载的   【从属班次】   可售座位和已售座位数   -->
+	<select id="queryBelongStowageSeats" resultType="java.util.HashMap" > 
+		SELECT seat_status seatStatus , COUNT(bs.id) counts FROM  `bs_schedule_bus_stowage`  sto 
+		JOIN bs_schedule_bus_seats  bs ON sto.belong_bus_id=bs.schedule_bus_id
+		WHERE belong_bus_id=#{scheduleBusId}  AND bs.seat_status IN (2,5)
+		GROUP BY seat_status
+	</select>
+	
+	<!-- 查询配载的  【待选班次】   可售座位和已售座位数 和从属的班次编号   -->
+	<select id="queryCandidateStowageSeats" resultType="java.util.HashMap" > 
+		  SELECT b.belong_bus_id belongBusId, seat_status seatStatus, COUNT(bs.id) counts FROM bs_schedule_bus_stowage a  
+		  JOIN (
+  			SELECT belong_bus_id FROM bs_schedule_bus_stowage sto WHERE sto.candidate_bus_id=#{scheduleBusId}
+  			) b  ON a.belong_bus_id=b.belong_bus_id
+ 		 JOIN  bs_schedule_bus_seats  bs ON a.candidate_bus_id=bs.schedule_bus_id
+  		 WHERE bs.seat_status IN (2,5)
+         GROUP BY bs.seat_status ,b.belong_bus_id
+	</select>
+	
+	
+	<!-- 根据班次编号   查询   该班次可售座位数 和已售座位数      -->
+	<select id="queryStowageByScheduleId" resultType="java.util.HashMap">
+  		 SELECT se.seat_status seatStatus, COUNT(1) counts
+		FROM `bs_schedule_bus` sb 
+		JOIN bs_schedule_bus_seats se ON sb.id=se.schedule_bus_id
+		<where>
+			se.seat_status IN (2,5)
+			<if test="scheduleBusId !=null and scheduleBusId != ''">
+		  		AND sb.id=#{scheduleBusId}
+			</if>
+         	GROUP BY se.seat_status 
+		</where>
+	</select>
+	
+	
+</mapper>

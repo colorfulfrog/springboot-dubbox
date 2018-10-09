@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.finance.PaymentDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.finance.Payment">
+		select a.*,sta.station_name,u.user_name as payerName,uu.user_name as payeeName from bs_payment a
+			left join sys_user u on a.payer = u.id
+			left join sys_user uu on a.payee = uu.id
+			left join bs_station sta on sta.id = a.station_id
+		<where>
+			<if test="orgId!=null and orgId!=''">
+				and a.org_id = #{orgId}
+			</if>
+			<if test="compId != null and compId != '' ">
+				and a.comp_id =#{compId}
+			</if>
+			<if test="payer !=null and payer !=''">
+				and a.payer = #{payer}
+			</if>
+			<if test="payee != null and payee != '' ">
+				and a.payee =#{payee}
+			</if>
+			<if test="stationId != null and stationId != '' ">
+				and a.station_id =#{stationId}
+			</if>
+			<if test="paymentType != null and paymentType != '' ">
+				and a.payment_type =#{paymentType}
+			</if>
+			<if test="startTime !=null and startTime != ''">
+				and a.create_time &gt;= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime != ''" >
+				and a.create_time &lt;= #{endTime} 
+			</if>
+		</where>
+		order by a.create_time desc
+	</select>
+	
+	<!-- 售票模块/缴款分页查询 缴款类型电脑票-->
+	<select id="jkPageList" resultType="com.yxhl.stationbiz.system.domain.response.PaymentResp">
+		SELECT aa.*,bb.* FROM
+		(
+			SELECT a.payment_type,IFNULL(SUM(a.payment_fee),0) as paymentFee,u.user_name as sellerName,
+			(
+				SELECT a.billing_date FROM bs_payment a
+				where a.payment_type = 1
+				<include refid="sqlWhere" />
+				ORDER BY a.billing_date DESC LIMIT 1 
+			)AS billing_date,
+			(
+				SELECT a.payment_time FROM bs_payment a
+				where a.payment_type = 1
+				<include refid="sqlWhere" />
+				ORDER BY a.payment_time DESC LIMIT 1 
+			)AS payment_time,
+			(
+			   <include refid="minph1" />
+			) AS startInsurance,
+			(
+			   <include refid="maxph1" />
+			)AS endInsurance
+			FROM bs_payment  a
+			left join sys_user u on a.payer = u.id
+			<where>  
+				a.payment_type = 1
+				and a.payment_status = 1
+				<include refid="sqlWhere" />
+			</where>
+		)aa,
+		(
+			SELECT 	COUNT(t.id) AS ticketNum,IFNULL(SUM(t.price),0) as ticketFee,
+				(
+				   SELECT COUNT(id) FROM bs_ticket
+				   WHERE STATUS =3 and refund_user_id = #{payer}
+				   and CAST(invoice_no AS UNSIGNED) BETWEEN (<include refid="minph1" />) AND (<include refid="maxph1" />)
+				) AS refundNum,
+				(
+				   SELECT IFNULL(SUM(refund_fee),0) FROM bs_ticket
+				   WHERE STATUS =3 and refund_user_id = #{payer}
+				   and CAST(invoice_no AS UNSIGNED) BETWEEN (<include refid="minph1" />) AND (<include refid="maxph1" />)
+				) AS refundFee,
+				(
+				   SELECT IFNULL(SUM(refund_charge),0)  FROM bs_ticket
+				   WHERE STATUS =3 and refund_user_id = #{payer}
+				   and CAST(invoice_no AS UNSIGNED) BETWEEN (<include refid="minph1" />) AND (<include refid="maxph1" />)
+				) AS refundCharge,
+				(
+				   SELECT COUNT(id) FROM bs_ticket
+				   WHERE STATUS =2 and refund_user_id = #{payer}
+				   and CAST(invoice_no AS UNSIGNED) BETWEEN (<include refid="minph1" />) AND (<include refid="maxph1" />)
+				) AS scrapNum,
+				(
+				   SELECT IFNULL(SUM(price),0) FROM bs_ticket
+				   WHERE STATUS =2 and refund_user_id = #{payer}
+				   and CAST(invoice_no AS UNSIGNED) BETWEEN (<include refid="minph1" />) AND (<include refid="maxph1" />)
+				) AS scrapFee
+			from bs_ticket t
+			<where>
+				t.invoice_no !=''
+				<if test="payer !=null and payer !=''">
+					and t.seller_user_id = #{payer}
+				</if>
+				AND CAST(t.invoice_no AS UNSIGNED) BETWEEN (<include refid="minph1" />) AND (<include refid="maxph1" />)
+			</where>
+		)bb
+	</select>
+	
+	<!-- 售票模块/缴款分页查询  缴款类型保险票-->
+	<select id="jkPageList2" resultType="com.yxhl.stationbiz.system.domain.response.PaymentResp">
+	SELECT aa.*,bb.* FROM
+		(
+			SELECT a.payment_type,IFNULL(SUM(a.payment_fee),0) as paymentFee,u.user_name as sellerName,
+				(
+					SELECT a.billing_date FROM bs_payment a
+					where a.payment_type = 2
+					<include refid="sqlWhere" />
+					ORDER BY a.billing_date DESC LIMIT 1 
+				)AS billing_date,
+				(
+					SELECT a.payment_time FROM bs_payment a
+					where a.payment_type = 2
+					<include refid="sqlWhere" />
+					ORDER BY a.payment_time DESC LIMIT 1 
+				)AS payment_time,
+				(
+					<include refid="minph2" />
+				) AS startInsurance,
+				(
+					<include refid="maxph2" />
+				)AS endInsurance
+				FROM bs_payment  a
+				left join sys_user u on a.payer = u.id
+				<where>
+					and a.payment_type = 2
+					and a.payment_status = 1
+					<include refid="sqlWhere" />
+				</where>
+		)aa,
+		(
+			SELECT COUNT(t.id) AS ticketNum,IFNULL(SUM(t.insurance_cost),0) as ticketFee,
+				(
+				   SELECT COUNT(id) FROM bs_ticket
+				   WHERE insurance_status =3 and refund_user_id = #{payer}
+				   AND CAST(insurance_code AS UNSIGNED) BETWEEN (<include refid="minph2" />) AND (<include refid="maxph2" />)
+				) AS refundNum,
+				(
+				   SELECT IFNULL(SUM(insurance_cost),0) FROM bs_ticket
+				   WHERE insurance_status =3 and refund_user_id = #{payer}
+				   AND CAST(insurance_code AS UNSIGNED) BETWEEN (<include refid="minph2" />) AND (<include refid="maxph2" />)
+				) AS refundFee,
+				(
+				   SELECT IFNULL(SUM(refund_charge),0) FROM bs_ticket
+				   WHERE STATUS =3 and refund_user_id = #{payer}
+				   AND CAST(insurance_code AS UNSIGNED) BETWEEN (<include refid="minph2" />) AND (<include refid="maxph2" />)
+				) AS refundCharge,
+				(
+				   SELECT COUNT(id) FROM bs_ticket
+				   WHERE insurance_status =2 and refund_user_id = #{payer}
+				   AND CAST(insurance_code AS UNSIGNED) BETWEEN (<include refid="minph2" />) AND (<include refid="maxph2" />)
+				) AS scrapNum,
+				(
+				   SELECT IFNULL(SUM(insurance_cost),0) FROM bs_ticket
+				   WHERE insurance_status =2 and refund_user_id = #{payer}
+				   AND CAST(insurance_code AS UNSIGNED) BETWEEN (<include refid="minph2" />) AND (<include refid="maxph2" />)
+				) AS scrapFee
+				FROM  bs_ticket t
+				<where>
+					and t.insurance_code!=''
+					<if test="payer !=null and payer !=''">
+						and t.seller_user_id = #{payer}
+					</if>
+					AND CAST(t.insurance_code AS UNSIGNED) BETWEEN (<include refid="minph2" />) AND (<include refid="maxph2" />)
+				</where>
+		)bb
+	</select>
+	
+	<!-- 电脑票起始票号 -->
+	<sql id="minph1">
+		SELECT MIN(payment_num) FROM bs_payment
+		   WHERE payment_type='1' 
+		   <include refid="queryWhere" />
+		   ORDER BY CAST(payment_num AS UNSIGNED)  LIMIT 1
+	</sql>
+	
+	<!-- 电脑票截止票号 -->
+	<sql id="maxph1">
+		SELECT MAX(payment_num) FROM bs_payment
+		   WHERE payment_type='1' 
+		   <include refid="queryWhere" />
+		   ORDER BY CAST(payment_num AS UNSIGNED) DESC LIMIT 1
+	</sql>
+	
+	<!-- 保险票起始票号 -->
+	<sql id="minph2">
+		SELECT MIN(payment_num) FROM bs_payment
+		   WHERE payment_type='2' 
+		   <include refid="queryWhere" />
+		   ORDER BY CAST(payment_num AS UNSIGNED)  LIMIT 1
+	</sql>
+	
+	<!-- 保险票截止票号 -->
+	<sql id="maxph2">
+		SELECT MAX(payment_num) FROM bs_payment
+		   WHERE payment_type='2' 
+		   <include refid="queryWhere" />
+		   ORDER BY CAST(payment_num AS UNSIGNED) DESC LIMIT 1
+	</sql>
+	
+	<!-- 时间，缴款人查询条件 -->
+	<sql id="queryWhere">
+	   and payer = #{payer} 
+	   <if test="startTime !=null and startTime != ''">
+			and billing_date &gt;= #{startTime} 
+	   </if>
+	   <if test="endTime !=null and endTime != ''" >
+			and billing_date &lt;= #{endTime} 
+	   </if>
+	</sql>
+	
+	<!-- 时间，交款人，机构单位查询条件 -->
+	<sql id="sqlWhere">
+	   <if test="payer !=null and payer !=''">
+			and a.payer = #{payer}
+		</if>
+		<if test="orgId!=null and orgId!=''">
+			and a.org_id = #{orgId}
+		</if>
+		<if test="compId != null and compId != '' ">
+			and a.comp_id =#{compId}
+		</if>
+		<if test="startTime !=null and startTime != ''">
+			and a.billing_date &gt;= #{startTime} 
+		</if>
+		<if test="endTime !=null and endTime != ''" >
+			and a.billing_date &lt;= #{endTime} 
+		</if>
+	</sql>
+	
+</mapper>

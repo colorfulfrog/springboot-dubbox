@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.schedule.BasicPriceDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.BasicPrice">
+		SELECT bbp.*,bbp.id as priceId,bt.station_name AS startName,bt1.station_name AS endName
+		FROM bs_basic_price bbp
+			LEFT JOIN bs_station bt ON bt.id = bbp.on_sta_id
+			LEFT JOIN bs_station bt1 ON bt1.id = bbp.off_sta_id
+		<where>
+			<if test="compId != null and compId != ''" >
+				and bbp.comp_id =#{compId}
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				and bbp.org_id = #{orgId}
+			</if>
+			<if test="scheduleTplId != null and scheduleTplId !='' ">
+				 AND bbp.schedule_tpl_id =#{scheduleTplId}
+			</if>
+		</where>
+		order by bbp.create_time desc
+	</select>
+	
+	<!-- 班次模板列表头信息 -->
+	<select id="getBusPrice" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.BasicPrice">
+		SELECT tpl.id as scheduleTplId,tpl.start_time,bl.start_state_id AS onStaId,bl.end_state_id AS offStaId,
+			bt.station_name AS startName,bt1.station_name AS endName,bv.approved_seats as seats,bv.seat_category as seatCate
+		FROM bs_schedule_bus_tpl tpl
+			LEFT JOIN bs_line bl ON bl.id=tpl.line_id
+			LEFT JOIN bs_station bt ON bt.id = bl.start_state_id
+			LEFT JOIN bs_station bt1 ON bt1.id = bl.end_state_id
+			LEFT JOIN bs_vehicle bv ON bv.line_id = bl.id
+		<where>
+			<if test="compId != null and compId != ''" >
+				and tpl.comp_id =#{compId}
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				and tpl.org_id = #{orgId}
+			</if>
+			<if test="scheduleTplId != null and scheduleTplId !='' ">
+				 AND tpl.id=#{scheduleTplId}
+			</if>
+			<if test="seatCate != null and seatCate !='' ">
+				 AND bv.seat_category=#{seatCate}
+			</if>
+			<if test="seats != null and seats !='' ">
+				 AND bv.approved_seats=#{seats}
+			</if>
+		</where>
+			GROUP BY bv.seat_category,tpl.id,tpl.start_time,bl.start_state_id,bl.end_state_id,bv.approved_seats
+	</select>
+	
+	<!-- 查票价信息 -->
+	<select id="getPriceList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.BasicPrice">
+		SELECT DISTINCT bbp.*,tpl.id,bt.station_name AS startName,bt1.station_name AS endName
+			FROM bs_basic_price bbp
+			LEFT JOIN bs_schedule_bus_tpl tpl ON tpl.id = bbp.schedule_tpl_id
+			LEFT JOIN bs_station bt ON bt.id = bbp.on_sta_id
+			LEFT JOIN bs_station bt1 ON bt1.id = bbp.off_sta_id
+		<where>
+			<if test="compId != null and compId != ''" >
+				and bbp.comp_id =#{compId}
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				and bbp.org_id = #{orgId}
+			</if>
+			<if test="scheduleTplId != null and scheduleTplId !='' ">
+				 AND bbp.schedule_tpl_id =#{scheduleTplId}
+			</if>
+			<if test="seatCate != null and seatCate !='' ">
+				 AND bbp.seat_cate=#{seatCate}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 班次模板座位类型 -->
+	<select id="getSeatCategory" resultType="com.yxhl.stationbiz.system.domain.response.SeatCategoryResp">
+		SELECT DISTINCT bv.seat_category
+		FROM bs_schedule_bus_tpl tpl
+			LEFT JOIN bs_line bl ON bl.id=tpl.line_id
+			LEFT JOIN bs_vehicle bv ON bv.line_id = bl.id
+		<where>
+			<if test="compId != null and compId != ''" >
+				and tpl.comp_id =#{compId}
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				and tpl.org_id = #{orgId}
+			</if>
+			<if test="scheduleTplId != null and scheduleTplId !='' ">
+				 AND tpl.id=#{scheduleTplId}
+			</if>
+		</where>
+	</select>
+
+	<!-- 班次模板座位类型 -->
+	<select id="getSeatCategoryList"
+		resultType="com.yxhl.stationbiz.system.domain.entity.schedule.BasicPrice">
+		SELECT
+		a.*,c.station_name
+		startName,d.station_name endName
+		FROM `bs_basic_price` a
+		LEFT JOIN bs_station c ON a.on_sta_id=c.id
+		LEFT
+		JOIN bs_station d ON a.off_sta_id=d.id
+		<where>
+			a.schedule_tpl_id=#{scheduleTplId}
+			<if test="orgId !=null and orgId !=''">
+				and a.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+				and a.comp_id=#{compId}
+			</if>
+			<!-- 条件 -->
+		</where>
+		order by a.create_time desc
+	</select>
+	
+</mapper>

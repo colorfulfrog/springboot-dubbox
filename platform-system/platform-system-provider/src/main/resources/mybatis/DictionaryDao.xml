@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.sys.DictionaryDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.sys.Dictionary">
+		select a.*,u.user_name as creator,uu.user_name as updater from sys_dictionary a
+		 left join sys_user u on a.create_by = u.id
+		 left join sys_user uu on a.update_by = uu.id
+		<where>
+			<if test="configKey != null and configKey != '' ">
+				and a.config_key like concat('%',#{configKey},'%')
+			</if>
+		</where>
+		order by a.create_time desc
+	</select>
+</mapper>

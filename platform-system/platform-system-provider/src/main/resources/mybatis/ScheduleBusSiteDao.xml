@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.ScheduleBusSiteDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusSite">
+		select sb.*,bs.station_name,be.entrance_name,tg.gate_name  from bs_schedule_bus_site sb
+		left join bs_station bs on sb.station_id=bs.id 
+		left join bs_bus_entrance be on sb.bus_entrance_id=be.id
+		left join bs_ticket_gate tg on sb.ticket_gate_id=tg.id
+		<where>
+			<if test="scheduleBusTplId != null">
+				  AND sb.schedule_bus_tpl_id=#{scheduleBusTplId}
+			</if>
+		</where>
+		order by sort
+	</select>
+	
+	<select id="selOne" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusSite">
+		select bust.*,bs.station_name,be.entrance_name,tg.gate_name from bs_schedule_bus_site bust
+		left join bs_station bs on bust.station_id=bs.id 
+		left join bs_bus_entrance be on bust.bus_entrance_id=be.id
+		left join bs_ticket_gate tg on bust.ticket_gate_id=tg.id
+		<where>
+			<if test="id != null">
+				  AND bust.id=#{id}
+			</if>
+		</where>
+	</select>
+	
+	<!--- 根据班次模板id，站点名称查停靠点-->
+	<select id="getStation" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusSite">
+		SELECT DISTINCT bust.station_id,bust.first_site_flag,bs.station_name,bs.spell FROM  `bs_schedule_bus_site`  bust
+		JOIN `bs_station`  bs ON bust.station_id=bs.id
+		<where>
+			and bust.status = 0
+			<if test="stationName != null and stationName != '' ">
+				AND bs.station_name like concat('%',#{stationName},'%')
+			</if>
+			<if test="spell != null and spell != '' ">
+				AND bs.spell like concat('%',#{spell},'%')
+			</if>
+			<if test="scheduleBusTplId != null and scheduleBusTplId != ''  ">
+				  AND bust.schedule_bus_tpl_id =#{scheduleBusTplId}
+			</if>
+			<if test="compId != null and compId != ''" >
+				and bust.comp_id =#{compId}
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				and bust.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selSortMaxSite" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusSite">
+		<![CDATA[
+			SELECT * FROM bs_schedule_bus_site WHERE schedule_bus_tpl_id=#{scheduleBusTplId}  and status=0 and sort=(SELECT  MAX(sort) FROM  bs_schedule_bus_site WHERE schedule_bus_tpl_id=#{scheduleBusTplId} and status=0 and sort<#{sort} ) LIMIT 1
+		]]>
+	</select>
+	
+	<select id="selSortMinSite" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusSite">
+		<![CDATA[
+			SELECT * FROM bs_schedule_bus_site WHERE schedule_bus_tpl_id=#{scheduleBusTplId} and status=0 and sort=(SELECT  MIN(sort) FROM  bs_schedule_bus_site WHERE schedule_bus_tpl_id=#{scheduleBusTplId} and status=0 and sort>#{sort} ) LIMIT 1
+		]]>
+	</select>
+	
+</mapper>

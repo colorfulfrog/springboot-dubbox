@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.DriverDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Driver">
+		select a.*,s.full_name,u.user_name as creator,uu.user_name as updater from bs_driver a
+		 left join sys_company s on a.comp_id = s.id
+		 left join sys_user u on a.create_by = u.id
+		 left join sys_user uu on a.update_by = uu.id
+		<where>
+			<if test="orgId!=null and orgId!=''">
+				and a.org_id = #{orgId}
+			</if>
+			<if test="driverName != null and driverName != '' ">
+				and a.driver_name like concat('%',#{driverName},'%')
+			</if>
+			<if test="identityCard != null and identityCard != '' ">
+				and a.identity_card like concat('%',#{identityCard},'%')
+			</if>
+			<if test="compId != null and compId != '' ">
+				and a.comp_id =#{compId}
+			</if>
+		</where>
+			ORDER BY a.create_time DESC
+	</select>
+	
+	<select id="exportData" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Driver">
+		select a.*,s.full_name,u.user_name as creator,uu.user_name as updater from bs_driver a
+		 left join sys_company s on a.comp_id = s.id
+		 left join sys_user u on a.create_by = u.id
+		 left join sys_user uu on a.update_by = uu.id
+		<where>
+			<if test="orgId!=null and orgId!=''">
+				and a.org_id = #{orgId}
+			</if>
+			<if test="driverName != null and driverName != '' ">
+				and a.driver_name like concat('%',#{driverName},'%')
+			</if>
+			<if test="identityCard != null and identityCard != '' ">
+				and a.identity_card like concat('%',#{identityCard},'%')
+			</if>
+			<if test="compId != null and compId != '' ">
+				and a.comp_id =#{compId}
+			</if>
+		</where>
+			ORDER BY a.create_time DESC
+	</select>
+</mapper>

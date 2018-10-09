@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.finance.TicketSellerBillDao">
+	
+	<select id="selPageList"
+	resultType="com.yxhl.stationbiz.system.domain.entity.finance.TicketSellerBill">
+	SELECT a.*,b.user_name receive_name,c.user_name grant_name FROM
+	`bs_ticket_seller_bill` a LEFT
+	JOIN `sys_user` b ON
+	a.receive_user=b.`id` LEFT JOIN `sys_user` c ON
+	a.grant_user=c.id
+	<where>
+	a.receive_user=#{receiveUser}
+		<if test="billType!=null and billType!=''">
+			and a.bill_type=#{billType}
+		</if>
+		<if test="status!=null">
+			and a.status=#{status}
+		</if>
+	</where>
+	order by a.create_time desc
+</select>
+
+<select id="companybillInfo"
+	resultType="com.yxhl.stationbiz.system.domain.entity.finance.TicketSellerBill"
+	parameterType="string">
+	SELECT a.*,b.user_name receive_name,c.user_name grant_name FROM
+	bs_ticket_seller_bill a LEFT JOIN `sys_user` b ON a.receive_user=b.`id`
+	LEFT JOIN `sys_user` c ON c.id=a.grant_user where
+	a.bill_entry_id=#{billEntryId}
+</select>
+</mapper>

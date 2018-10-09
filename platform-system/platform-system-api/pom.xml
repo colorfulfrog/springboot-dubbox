@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.yxhl</groupId>
+		<artifactId>platform-system</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>platform-system-api</artifactId>
+
+    <packaging>jar</packaging>
+
+    <name>platform-system-api</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <common.api.version>1.0.0</common.api.version>
+        <common.utils.version>1.0.0</common.utils.version>
+    </properties>
+    <dependencies>
+    	<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>com.yxhl</groupId>
+            <artifactId>platform_common_api</artifactId>
+            <version>${common.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yxhl</groupId>
+            <artifactId>platform_common_utils</artifactId>
+            <version>${common.utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

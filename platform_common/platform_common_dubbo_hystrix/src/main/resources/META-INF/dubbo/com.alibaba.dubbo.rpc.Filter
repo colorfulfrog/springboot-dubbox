@@ -1,0 +1,1 @@
+hystrix=com.yxhl.platform.common.hystrix.dubbo.DubboHystrixFilter

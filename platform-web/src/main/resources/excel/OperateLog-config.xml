@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<excels>
+	<!-- 日志导出 -->
+	<excel id="OperateLogExport" class="com.yxhl.stationbiz.system.domain.entity.sys.OperateLog" sheetname="操作日志导出" defaultColumnWidth="5000" enableStyle="true">
+		<!-- <field name="id" title="id"/> -->
+		<field name="module" title="操作模块"/>
+		<field name="type" title="操作类型"/>
+		<field name="ip" title="操作IP" />
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<!-- 机构导出 -->
+	<excel id="OrganizationExport" class="com.yxhl.stationbiz.system.domain.entity.sys.Organization" sheetname="机构导出" defaultColumnWidth="5000" enableStyle="true">
+		<!-- <field name="id" title="id"/> -->
+		<field name="orgCode" title="编码"/>
+		<field name="shortName" title="机构简称"/>
+		<field name="fullName" title="机构全称" />
+		<field name="shortSpell" title="简拼"/>
+		<field name="regionName" title="所属区域"/>
+		<field name="contact" title="联系人" />
+		<field name="telephone" title="联系电话"/>
+		<field name="attachmentUrl" title="附件 Url"/>
+		<field name="attachmentName" title="附件名称" />
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<!-- 参数配置导出 -->
+	<excel id="ConfigExport" class="com.yxhl.stationbiz.system.domain.entity.sys.Config" sheetname="参数配置导出" defaultColumnWidth="5000" enableStyle="true">
+		<!-- <field name="id" title="id"/> -->
+		<field name="type" title="参数类型"/>
+		<field name="code" title="参数编码" />
+		<field name="value" title="参数取值"/>
+		<field name="remark" title="备注"/>
+		<field name="shortName" title="所属机构名称" />
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<!-- 站点导出 -->
+	<excel id="StationExport" class="com.yxhl.stationbiz.system.domain.entity.basicinfo.Station" sheetname="站点导出导出" defaultColumnWidth="5000" enableStyle="true">
+		<!-- <field name="id" title="id"/> -->
+		<field name="stationName" title="站点名称"/>
+		<field name="stationLevel" title="车站级别"/>
+		<field name="oprCode" title="操作码" />
+		<field name="spell" title="简拼"/>
+		<field name="mileage" title="公里数"/>
+		<field name="boardPointFlag" title="是否上车点 0是、1否" />
+		<field name="returnTicketFlag" title="是否售往返车票0是、1否"/>
+		<field name="contacts" title="联系人" />
+		<field name="telephone" title="联系电话"/>
+		<field name="serviceStationFlag" title="是否是快递服务站0否、1县级中转站、2家村服务站"/>
+		<field name="alias" title="别称" />
+		<field name="status" title="状态"/>
+		<field name="regionName" title="所属区域"/>
+		<field name="stationCode" title="站点编码" />
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<!-- 驾驶员导出 -->
+	<excel id="DriverExport" class="com.yxhl.stationbiz.system.domain.entity.basicinfo.Driver" sheetname="驾驶员导出" defaultColumnWidth="5000" enableStyle="true">
+		<!-- <field name="id" title="id"/> -->
+		<field name="driverName" title="姓名"/>
+		<field name="shortSpell" title="简拼"/>
+		<field name="employeeId" title="工号" />
+		<field name="icCardNo" title="IC卡号"/>
+		<field name="sex" title="性别"/>
+		<field name="identityCard" title="身份证" />
+		<field name="birthDate" title="出生日期"/>
+		<field name="telephone" title="联系电话" />
+		<field name="address" title="家庭住址"/>
+		<field name="educationalLevel" title="文化程度"/>
+		<field name="fullName" title="所属单位" />
+		<field name="birthPlace" title="籍贯"/>
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<!-- 车辆导出 -->
+	<excel id="DriverExport" class="com.yxhl.stationbiz.system.domain.entity.basicinfo.Vehicle" sheetname="车辆导出" defaultColumnWidth="5000" enableStyle="true">
+		<field name="fullName" title="所属单位" />
+		<field name="carNo" title="车牌号"/>
+		<field name="carBrandColor" title="车牌颜色"/>
+		<field name="lineId" title="运营线路" />
+		<field name="carBodyColor" title="车身颜色"/>
+		<field name="brandModel" title="厂牌"/>
+		<field name="engineNo" title="发动机号" />
+		<field name="frameNo" title="车架号"/>
+		<field name="approvedSeats" title="核定座位数"/>
+		<field name="expressSupport" title="是否支持快递" />
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<!-- 驾驶员绑定车辆导出-->
+	<excel id="DriverVehicleExport" class="com.yxhl.stationbiz.system.domain.entity.basicinfo.DriverVehicle" sheetname="驾驶员绑定车辆导出" defaultColumnWidth="5000" enableStyle="true">
+		<field name="driverName" title="驾驶员姓名" />
+		<field name="carNo" title="车牌号"/>
+		<field name="identityCard" title="驾驶员身份证"/>
+		<field name="lineName" title="线路名称" />
+		<field name="fullName" title="所属单位名称"/>
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+	
+	<!-- 车辆安检导出 -->
+	<excel id="VehicleSecurityCheckExport" class="com.yxhl.stationbiz.system.domain.entity.security.VehicleSecurityCheck" sheetname="车辆安检导出" defaultColumnWidth="5000" enableStyle="true">
+		<field name="checkDate" title="安检日期" pattern="yyyy-MM-dd "/>
+		<field name="stationName" title="安检车站"/>
+		<field name="fullName" title="车属单位" />
+		<field name="lineId" title="运营线路" />
+		<field name="operationType" title="营运类型" />
+		<field name="opeCertNo" title="营运证号" />
+		<field name="qualificationCertNo" title="从业资格证号" />
+		<field name="carNo" title="车牌号"/>
+		<field name="fuelType" title="燃料类型"/>
+		<field name="exteriorFlag" title="外观"/>
+		<field name="steeringSysFlag" title="转向"/>
+		<field name="creator" title="创建人"/>
+		<field name="createTime" title="创建时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+		<field name="updater" title="修改人"/>
+		<field name="updateTime" title="修改时间" pattern="yyyy-MM-dd HH:mm:SS"/>
+	</excel>
+</excels>

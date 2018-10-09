@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.StationDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Station">
+		select a.*,r.region_name,u.user_name as creator,uu.user_name as updater from bs_station a
+		 left join bs_region r on a.region_code = r.id
+		 left join sys_user u on a.create_by = u.id
+		 left join sys_user uu on a.update_by = uu.id
+		<where>
+			and a.org_id = #{orgId}
+			<if test="stationName !=null and stationName != '' ">
+				and a.station_name like concat('%',#{stationName},'%')
+			</if>
+			<if test="regionCode !=null and regionCode != '' ">
+				and a.region_code like concat('%',#{regionCode},'%')
+			</if>
+			<if test="oprCode !=null and oprCode != '' ">
+				and a.opr_code like concat('%',#{oprCode},'%')
+			</if>
+			<if test="spell !=null and spell != '' ">
+				and a.spell like concat('%',#{spell},'%')
+			</if>
+			<choose>
+         	 <when test="boardPointFlag !=null and boardPointFlag ==10 ">
+					and a.board_point_flag = 0
+	          </when>
+	          <otherwise>and a.board_point_flag = #{boardPointFlag}</otherwise>
+	        </choose>
+			<if test="returnTicketFlag !=null and returnTicketFlag != '' ">
+				and a.return_ticket_flag = #{returnTicketFlag}
+			</if>
+		</where>
+		 ORDER BY a.create_time DESC
+	</select>
+	
+	<select id="getOne" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Station">
+		 SELECT * FROM bs_station where region_code = #{regionCode} ORDER BY create_time DESC LIMIT 1
+	</select>
+	
+	<select id="exportData" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Station">
+		select a.*,r.region_name,u.user_name as creator,uu.user_name as updater from bs_station a
+		 left join bs_region r on a.region_code = r.id
+		 left join sys_user u on a.create_by = u.id
+		 left join sys_user uu on a.update_by = uu.id
+		<where>
+			<if test="orgId!=null and orgId!=''">
+				and a.org_id = #{orgId}
+			</if>
+			<if test="stationName != null and stationName != '' ">
+				and a.station_name like concat('%',#{stationName},'%')
+			</if>
+			<if test="regionCode != null and regionCode != '' ">
+				and a.region_code like concat('%',#{regionCode},'%')
+			</if>
+			<if test="oprCode != null and oprCode != '' ">
+				and a.opr_code like concat('%',#{oprCode},'%')
+			</if>
+			<if test="spell != null and spell != '' ">
+				and a.spell like concat('%',#{spell},'%')
+			</if>
+			<if test="boardPointFlag != null and boardPointFlag != '' ">
+				and a.board_point_flag =#{boardPointFlag}
+			</if>
+		</where>
+		 ORDER BY a.create_time DESC
+	</select>
+</mapper>

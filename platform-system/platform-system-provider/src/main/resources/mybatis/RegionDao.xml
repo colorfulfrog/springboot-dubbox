@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.RegionDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.Region">
+				SELECT * FROM (SELECT a.*,b.user_name AS creator,c.user_name AS updater ,d.region_name parentName   FROM bs_region a LEFT JOIN `sys_user` b ON a.`create_by`=b.`id` LEFT JOIN `sys_user` c ON a.`update_by`=c.`id` LEFT JOIN `bs_region` d ON a.`parent_id`=d.id)  a 
+		<where>
+		1=1
+			<if test="regionName != null">
+				and a.region_name like concat('%',#{regionName},'%')
+			</if>
+			<if test="regionCode != null">
+				and a.region_code like concat('%',#{regionCode},'%')
+			</if>
+			<if test="spell != null">
+				and	a.spell like concat('%',#{spell},'%')
+			</if>
+		</where>
+		order by a.create_time desc
+	</select>
+</mapper>

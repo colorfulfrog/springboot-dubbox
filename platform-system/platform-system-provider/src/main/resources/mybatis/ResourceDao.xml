@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.sys.ResourceDao">
+	
+	<select id="selPageList"
+	resultType="com.yxhl.stationbiz.system.domain.entity.sys.Resource">
+	SELECT * FROM (SELECT a.*,b.user_name as creator FROM sys_resource a LEFT JOIN `sys_user` b ON  a.create_by=b.id) a 
+	<where>
+		a.type=1
+		<if test="resourceName != null">
+			and a.resource_name like concat('%',#{resourceName},'%')
+		</if>
+		ORDER BY a.resource_level,a.sort_num
+	</where>
+</select>
+	
+	<select id="selectRidResource"
+	resultType="com.yxhl.stationbiz.system.domain.entity.sys.Resource" parameterType="java.util.Map">
+	SELECT DISTINCT a.* FROM `sys_resource` a,sys_relation
+	b WHERE 1=1
+	<if test="type !=null">
+		and a.type=#{type}
+	</if>
+	<if test="parent_id != null">
+		and a.parent_id=#{parent_id}
+	</if>
+	AND is_show=1 AND b.bid=a.id AND b.type=2 AND b.aid IN(SELECT bid FROM
+	`sys_relation` WHERE TYPE=1 AND aid=#{uid})
+	ORDER BY resource_level,sort_num  
+</select>
+
+	<select id="ridResource"
+	resultType="com.yxhl.stationbiz.system.domain.entity.sys.Resource"
+	parameterType="string">
+	SELECT b.* FROM `sys_role` a ,`sys_resource`
+	b,`sys_relation` c WHERE a.id=c.aid AND b.id=c.bid AND c.type=2
+	and a.id=#{rid}
+	 ORDER
+	BY b.resource_level,b.sort_num
+</select>
+
+</mapper>

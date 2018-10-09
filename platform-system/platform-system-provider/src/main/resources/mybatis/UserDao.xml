@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.sys.UserDao">
+
+	<select id="selPageList"
+		resultType="com.yxhl.stationbiz.system.domain.entity.sys.User">
+		SELECT
+	a.*,b.full_name AS orgName,c.full_name AS companyName,d.station_name AS stationName,e.user_name as createName FROM
+	(SELECT *,(SELECT
+	GROUP_CONCAT(ro.`role_name`) FROM
+	sys_user u, sys_relation re,sys_role
+	ro WHERE u.id=re.`aid` AND
+	re.`bid`=ro.`id` AND re.`type`=1 AND
+	u.`id`=su.id) roleName
+	FROM sys_user su
+	order by su.create_time desc
+	) a
+	LEFT JOIN `sys_organization` b ON a.org_id=b.id AND a.roleName IS NOT NULL
+	LEFT JOIN sys_company c ON a.company_id =c.id LEFT JOIN bs_station d ON
+	a.station_id=d.id
+	LEFT JOIN sys_user e ON a.`create_by`=e.id
+		<where>
+		<if test="orgId !=null and orgId !=''">
+			AND a.org_id=#{orgId}
+		</if>
+		<if test="companyId !=null and companyId !=''">
+			AND a.company_id=#{companyId}
+		</if>
+		<if test="userName !=null and userName !=''">
+			AND a.user_name like concat('%',#{userName},'%')
+		</if>
+		<if test="roleName !=null and roleName !=''">
+			AND roleName like concat('%',#{roleName},'%')
+		</if>
+	</where>
+	</select>
+
+	<select id="userLogin"
+		resultType="com.yxhl.stationbiz.system.domain.entity.sys.User"
+		parameterType="string">
+		SELECT * FROM `sys_user` where
+		user_code=#{account} 
+	</select>
+	
+	<select id="userTree"
+	resultType="com.yxhl.stationbiz.system.domain.entity.sys.User"
+	parameterType="string">
+	SELECT DISTINCT a.id,a.user_name as full_name FROM `sys_user` a
+	LEFT
+	JOIN `sys_relation` b ON a.id=b.aid AND b.type=1 LEFT JOIN
+	`sys_role` c
+	ON b.bid=c.id WHERE c.role_code
+	IN('conductor','ticketInspector') AND
+	a.station_id=#{stationId}
+</select>
+
+
+<select id="financeUser"
+	resultType="com.yxhl.stationbiz.system.domain.entity.sys.User"
+	parameterType="string">
+	SELECT DISTINCT a.id,a.user_name FROM `sys_user` a
+	LEFT
+	JOIN `sys_relation` b ON a.id=b.aid AND b.type=1 LEFT JOIN
+	`sys_role` c
+	ON b.bid=c.id WHERE c.role_code
+	IN('finance') AND
+	a.company_id=#{companyId}
+</select>
+
+	<select id="getUserByRole" resultType="com.yxhl.stationbiz.system.domain.entity.sys.User">
+		SELECT * FROM sys_user
+		WHERE id IN 
+		(
+			SELECT aid FROM sys_relation WHERE bid IN
+			(
+				SELECT id FROM sys_role ro  WHERE role_code = #{roleName}
+				<if test="orgId!=null and orgId!=''">
+					and org_id = #{orgId}
+				</if>
+			)
+		) 
+		<if test="orgId!=null and orgId!=''">
+				and org_id = #{orgId}
+		</if>
+		<if test="companyId != null and companyId != '' ">
+			and company_id =#{companyId}
+		</if>
+	</select>
+
+</mapper>

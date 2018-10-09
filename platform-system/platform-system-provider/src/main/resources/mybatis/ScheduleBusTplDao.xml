@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.ScheduleBusTplDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusTpl">
+		  SELECT tpl.*,sc.full_name,bl.line_name,su.user_name creator,su1.user_name updater,be.entrance_name,tg.gate_name  FROM bs_schedule_bus_tpl tpl
+			left JOIN sys_company sc ON tpl.comp_id=sc.id
+			left JOIN bs_line bl ON bl.id=tpl.line_id
+			LEFT JOIN sys_user su ON su.id=tpl.create_by
+			LEFT JOIN sys_user su1 ON su1.id=tpl.update_by
+			left join bs_bus_entrance be on tpl.bus_entrance_id=be.id
+			left join bs_ticket_gate tg on tpl.ticket_gate_id=tg.id
+		<where>
+			<if test="orgId != null and orgId!='' ">
+				  AND tpl.org_id=#{orgId}
+			</if>
+			<if test="compId != null and compId !='' ">
+				 AND tpl.comp_id=#{compId}
+			</if>
+			<if test="lineId != null and lineId !='' ">
+				 AND tpl.line_id=#{lineId}
+			</if>
+			<if test="busCode != null and busCode !='' ">
+				 AND tpl.bus_code=#{busCode}
+			</if>
+			<if test="status != null and status !='' ">
+				 AND tpl.status=#{status}
+			</if>
+			<if test="fullName != null and fullName!='' ">
+				 AND INSTR(sc.full_name,#{fullName}) > 0
+			</if>
+			<if test="lineName != null and lineName!='' ">
+				 AND INSTR(bl.line_name,#{lineName}) > 0
+			</if>
+			<if test="runFlowFlag == 1 or overtimeBusFlag== 1 or passBusFlag == 1  or doubleBusFlag==1 or specializeFlag==1 ">
+				 AND  (
+			 	<if test="runFlowFlag == 1 ">tpl.run_flow_flag=1</if>
+			 	<if test="overtimeBusFlag == 1 "> <if test="runFlowFlag == 1 "> OR</if>  tpl.overtime_bus_flag=1</if>
+				<if test="passBusFlag == 1 ">    <if test="overtimeBusFlag == 1 or runFlowFlag == 1 ">OR</if>  tpl.pass_bus_flag=1</if>
+				<if test="doubleBusFlag == 1 "><if test="passBusFlag==1 or overtimeBusFlag == 1 or runFlowFlag == 1  ">OR</if> tpl.double_bus_flag=1</if>
+				<if test="specializeFlag == 1 "><if test="doubleBusFlag==1 or passBusFlag==1 or overtimeBusFlag == 1 or runFlowFlag == 1  ">OR</if> tpl.specialize_flag=1</if>
+			 	) 
+			</if>
+			
+		</where>
+		order by create_time desc 
+	</select>
+	
+	<select id="selTplByLoopId" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusTpl">
+		SELECT t.id,t.`bus_code`,t.`start_time` FROM `bs_schedule_loop_bus` b,`bs_schedule_bus_tpl` t WHERE b.`schedule_bus_id`=t.`id` AND b.`schedule_loop_id`=#{scheduleLoopId} ORDER BY t.`start_time`
+	</select>
+	
+	
+	<select id="selOne" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusTpl">
+		  SELECT tpl.*,sc.full_name,bl.line_name,su.user_name creator,su1.user_name updater,be.entrance_name,tg.gate_name  FROM bs_schedule_bus_tpl tpl
+			left JOIN sys_company sc ON tpl.comp_id=sc.id
+			left JOIN bs_line bl ON bl.id=tpl.line_id
+			LEFT JOIN sys_user su ON su.id=tpl.create_by
+			LEFT JOIN sys_user su1 ON su1.id=tpl.update_by
+			left join bs_bus_entrance be on tpl.bus_entrance_id=be.id
+			left join bs_ticket_gate tg on tpl.ticket_gate_id=tg.id
+		<where>
+			<if test="id != null and id!='' ">
+				  AND tpl.id=#{id}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据线路ID查询已经配置循环的班次模板信息 -->
+	<select id="selScheduleTplByLineId" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusTpl">
+		SELECT 
+		  sbt.* 
+		FROM
+		  bs_schedule_loop sl,
+		  `bs_schedule_loop_bus` slb,
+		  `bs_schedule_bus_tpl` sbt 
+		WHERE sl.`id` = slb.`schedule_loop_id` 
+		  AND slb.`schedule_bus_id` = sbt.`id` 
+		  AND sbt.`line_id` = #{lineId} 
+		ORDER BY sbt.`start_time`
+	</select>
+	
+	
+	<!-- 票价管理班次模板分页 -->
+	<select id="selBusPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.ScheduleBusTpl">
+		  SELECT tpl.*,sc.full_name,bl.line_name,su.user_name creator,su1.user_name updater,be.entrance_name,tg.gate_name  FROM bs_schedule_bus_tpl tpl
+			left JOIN sys_company sc ON tpl.comp_id=sc.id
+			left JOIN bs_line bl ON bl.id=tpl.line_id
+			LEFT JOIN sys_user su ON su.id=tpl.create_by
+			LEFT JOIN sys_user su1 ON su1.id=tpl.update_by
+			left join bs_bus_entrance be on tpl.bus_entrance_id=be.id
+			left join bs_ticket_gate tg on tpl.ticket_gate_id=tg.id
+		<where>
+			<if test="orgId != null and orgId!='' ">
+				  AND tpl.org_id=#{orgId}
+			</if>
+			<if test="compId != null and compId !='' ">
+				 AND tpl.comp_id=#{compId}
+			</if>
+			<if test="lineId != null and lineId !='' ">
+				 AND tpl.line_id=#{lineId}
+			</if>
+			<if test="busCode != null and busCode !='' ">
+				 AND tpl.bus_code=#{busCode}
+			</if>
+			<if test="status != null and status !='' ">
+				 AND tpl.status=#{status}
+			</if>
+			<if test="fullName != null and fullName!='' ">
+				 AND INSTR(sc.full_name,#{fullName}) > 0
+			</if>
+			<if test="lineName != null and lineName!='' ">
+				 AND INSTR(bl.line_name,#{lineName}) > 0
+			</if>
+			<if test="vehicleType != null and vehicleType !='' ">
+				 AND tpl.vehicle_type=#{vehicleType}
+			</if>
+			<if test="oprMode != null and oprMode !='' ">
+				 AND tpl.opr_mode=#{oprMode}
+			</if>
+			<if test="runArea != null and runArea !='' ">
+				 AND tpl.run_area=#{runArea}
+			</if>
+			<if test="oprCategory != null and oprCategory !='' ">
+				 AND tpl.opr_category=#{oprCategory}
+			</if>
+			<if test="runFlowFlag == 1 or overtimeBusFlag== 1 or passBusFlag == 1  or doubleBusFlag==1 or specializeFlag==1 ">
+				 AND  (
+			 	<if test="runFlowFlag == 1 ">tpl.run_flow_flag=1</if>
+			 	<if test="overtimeBusFlag == 1 "> <if test="runFlowFlag == 1 "> OR</if>  tpl.overtime_bus_flag=1</if>
+				<if test="passBusFlag == 1 ">    <if test="overtimeBusFlag == 1 or runFlowFlag == 1 ">OR</if>  tpl.pass_bus_flag=1</if>
+				<if test="doubleBusFlag == 1 "><if test="passBusFlag==1 or overtimeBusFlag == 1 or runFlowFlag == 1  ">OR</if> tpl.double_bus_flag=1</if>
+				<if test="specializeFlag == 1 "><if test="doubleBusFlag==1 or passBusFlag==1 or overtimeBusFlag == 1 or runFlowFlag == 1  ">OR</if> tpl.specialize_flag=1</if>
+			 	) 
+			</if>
+			
+		</where>
+		order by create_time desc 
+	</select>
+</mapper>

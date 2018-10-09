@@ -1,0 +1,41 @@
+spring:
+  redis:
+    database: 10
+    host: 10.44.210.13
+    port: 6379
+    password: YueXingHuLian@45435361094
+    timeout: 0
+    pool:
+      max-active: 300
+      max-idle: 100
+      max-wait: -1
+      min-idle: 0
+      
+#  rabbitmq:
+#    host: 10.44.210.13
+#    port: 5672
+#    username: admin
+#    password: admin123
+#    virtualHost: /
+
+server:
+  port: 8188
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
+    port-header: X-Forwarded-Port
+    accesslog:
+      debug: true #请求响应数据调试
+  use-forward-headers: true
+  
+DUBBO_ZK_URL: 10.44.210.13:2181,10.44.208.246:2181
+
+#oss 配置
+aliyun: 
+  oss: 
+    endpoint: http://oss-cn-beijing.aliyuncs.com
+    osswebsite: https://yxstation.oss-cn-beijing.aliyuncs.com/
+    accessKeyId: LTAIVrykmcNc7Gxv
+    accessKeySecret: fQkUARpDbq5DNVcxjKmY68KTsiba6R
+    bucketName: yxstation
+    testBucket: files

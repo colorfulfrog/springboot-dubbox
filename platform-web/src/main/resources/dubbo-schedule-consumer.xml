@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	
+	<!-- 报班服务类 -->
+	<dubbo:reference id="scheduleBusService"
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.ScheduleBusService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	<dubbo:reference id="scheduleLoopBusService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleLoopBusService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	<dubbo:reference id="execPriceService"
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.ExecPriceService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	<dubbo:reference id="scheduleBusSeatsService"
+		interface="com.yxhl.stationbiz.system.domain.service.ticket.ScheduleBusSeatsService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	<dubbo:reference id="ticketService"
+		interface="com.yxhl.stationbiz.system.domain.service.ticket.TicketService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	<dubbo:reference id="scheduleBusStowageService"
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.ScheduleBusStowageService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	<dubbo:reference id="orderService"
+		interface="com.yxhl.stationbiz.system.domain.service.ticket.OrderService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+</beans>

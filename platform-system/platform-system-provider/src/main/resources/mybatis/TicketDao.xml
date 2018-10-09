@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.ticket.TicketDao">
+	
+	<!-- 财务模块/售票分页查询 -->
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.ticket.Ticket">
+		select a.*,u.user_name as sellerName,uu.user_name as refundName,u.employ_id,uu.employ_id as tpEmployId,bus.line_name,bus.run_date,bus.vehicle_type,bus.bus_code, 
+			bus.report_car_no,od.start,od.destination,od.total_fee,od.sell_type,sta.station_name,cto.ticket_cate_name,seat.seat_num
+		from bs_ticket a
+		 left join sys_user u on a.seller_user_id = u.id
+		 left join sys_user uu on a.refund_user_id = uu.id
+		 left join bs_schedule_bus bus on bus.id = a.schedule_bus_id 
+		 left join bs_order od on od.id = a.order_id
+		 left join bs_station sta on sta.id = a.station_id
+		 left join bs_ticket_category cto on cto.id = a.ticket_category_id
+		 left join bs_schedule_bus_seats seat on seat.id = a.seat_id
+		<where>
+			<if test="orgId!=null and orgId!=''">
+				and a.org_id = #{orgId}
+			</if>
+			<if test="compId != null and compId != '' ">
+				and a.comp_id =#{compId}
+			</if>
+			<if test="sellerUserId != null and sellerUserId != '' ">
+				and a.seller_user_id =#{sellerUserId}
+			</if>
+			<if test="refundUserId != null and refundUserId != '' ">
+				and a.refund_user_id =#{refundUserId}
+			</if>
+			<if test="checkStatus !=null and checkStatus !=''">
+				and a.check_status = #{checkStatus}
+			</if>
+			<if test="sellerType != null and sellerType != '' ">
+				and a.seller_type =#{sellerType}
+			</if>
+			<if test="status !=null and status!=''">
+				and a.status = #{status}
+			</if>
+			<if test="name !=null and name !=''">
+				and (a.name = #{name} or a.id_card_no = #{name}) 
+			</if>
+			<if test="stationId != null and stationId != '' ">
+				and a.station_id =#{stationId}
+			</if>
+			<if test="spStartTime !=null and spStartTime != ''">
+				and a.create_time &gt;= #{spStartTime} 
+			</if>
+			<if test="spEndTime !=null and spEndTime != ''" >
+				and a.create_time &lt;= #{spEndTime} 
+			</if>
+			<if test="refundStartTime !=null and refundStartTime != ''">
+				and a.refund_date &gt;= #{refundStartTime} 
+			</if>
+			<if test="refundEndTime !=null and refundEndTime != ''" >
+				and a.refund_date &lt;= #{refundEndTime} 
+			</if>
+			<if test="invoiceNo != null and invoiceNo != '' ">
+				and a.invoice_no like concat('%',#{invoiceNo},'%')
+			</if>
+			<if test="employId != null and employId != '' ">
+				and u.employ_id =#{employId}
+			</if>
+			<if test="tpEmployId != null and tpEmployId != '' ">
+				and u.employ_id =#{tpEmployId}
+			</if>
+			<if test="start != null and start != '' ">
+				and od.start like concat('%',#{start},'%')
+			</if>
+			<if test="sellType != null and sellType != '' ">
+				and od.sell_type =#{sellType}
+			</if>
+			<if test="destination != null and destination != '' ">
+				and od.destination like concat('%',#{destination},'%')
+			</if>
+			<if test="lineName != null and lineName != '' ">
+				and bus.line_name like concat('%',#{lineName},'%')
+			</if>
+			<if test="busCode != null and busCode != '' ">
+				and bus.bus_code like concat('%',#{busCode},'%')
+			</if>
+			<if test="reportCarNo != null and reportCarNo != '' ">
+				and bus.report_car_no like concat('%',#{reportCarNo},'%')
+			</if>
+			<if test="vehicleType != null and vehicleType != '' ">
+				and bus.vehicle_type =#{vehicleType}
+			</if>
+			<if test="fcStartTime !=null and fcStartTime != ''">
+				and bus.run_date &gt;= #{fcStartTime} 
+			</if>
+			<if test="fcEndTime !=null and fcEndTime != ''">
+				and bus.run_date &lt;= #{fcEndTime} 
+			</if>
+			<if test="gdbspFlag == 1 or gdbbpFlag == 1 or lsbbpFlag == 1  or tpFlag ==1 ">
+				 AND (
+				 	<if test="gdbspFlag == 1 ">od.sell_type = 0</if>
+				 	<if test="gdbbpFlag == 1 "><if test="gdbspFlag == 1 ">OR</if> od.sell_type = 1</if>
+				 	<if test="lsbbpFlag == 1 "><if test="gdbspFlag == 1 or gdbbpFlag == 1">OR</if> od.sell_type = 2</if>
+				 	<if test="tpFlag == 1 "><if test="gdbspFlag == 1 or gdbbpFlag == 1 or lsbbpFlag == 1">OR</if> od.sell_type = 3</if>
+			 		) 
+			</if>
+		</where>
+		ORDER BY a.create_time DESC
+	</select>
+
+
+	<select id="selTicketPageList"
+	resultType="com.yxhl.stationbiz.system.domain.entity.ticket.Ticket">
+	SELECT a.*,b.seat_num,c.run_time,SUBSTRING_INDEX(c.line_name, '-', 1)
+	START,SUBSTRING_INDEX(c.line_name, '-', -1) destination,d.user_name,d.employ_id
+	seller_name,'身份证' AS 'cardtype' FROM `bs_ticket` a LEFT JOIN `bs_schedule_bus_seats` b ON
+	a.seat_id=b.id LEFT JOIN `bs_schedule_bus` c ON b.schedule_bus_id=c.id
+	LEFT JOIN `sys_user` d ON a.seller_user_id=d.id
+	LEFT JOIN `bs_line` e ON c.line_id=e.id
+	<where>
+		a.insurance_code is not null and a.insurance_code &lt;&gt;''
+		<if test="orgId!=null and orgId!=''">
+			and a.org_id = #{orgId}
+		</if>
+		<if test="compId != null and compId != '' ">
+			and a.comp_id =#{compId}
+		</if>
+		<if test="insuranceCode !=null and insuranceCode !=''">
+			and a.insurance_code = #{insuranceCode}
+		</if>
+		<if test="name !=null and name !=''">
+			and (a.name = #{name} or a.id_card_no = #{name})
+		</if>
+		<if test="status !=null and status!=''">
+			and a.status = #{status}
+		</if>
+		<if test="spStartTime !=null and spStartTime != ''">
+			and a.create_time &gt;= #{spStartTime}
+		</if>
+		<if test="spEndTime !=null and spEndTime != ''">
+			and a.create_time &lt;= #{spEndTime}
+		</if>
+		<if test="stationId != null and stationId != '' ">
+			and a.station_id =#{stationId}
+		</if>
+		<if test="invoiceNo != null and invoiceNo != '' ">
+			and a.invoice_no like concat('%',#{invoiceNo},'%')
+		</if>
+		<if test="startStation != null and startStation != ''">
+			and e.start_state_id=#{startStation}
+		</if>
+		<if test="insuranceStatus != null and insuranceStatus != ''">
+			and a.insurance_status=#{insuranceStatus}
+		</if>
+		<if test="refundStartTime !=null and refundStartTime !=''">
+			and a.refund_date &gt;= #{refundStartTime}
+		</if>
+		<if test="refundEndTime !=null and refundEndTime !=''">
+			and a.refund_date &lt;= #{refundEndTime}
+		</if>
+	</where>
+	ORDER BY a.create_time DESC
+</select>
+
+	<!-- 售票模块/废票分页查询 -->
+	<select id="fpPageList" resultType="com.yxhl.stationbiz.system.domain.entity.ticket.Ticket">
+		select a.*,u.user_name as sellerName,u.employ_id,bus.line_name,bus.run_date,bus.vehicle_type,bus.bus_code, bus.bus_type,bus.run_status,
+			bus.real_run_time as realRunTime,od.start,od.destination,od.total_fee,od.sell_type,od.out_pay_type,od.children,sta.station_name,cto.ticket_cate_name,seat.seat_num
+		from bs_ticket a
+		 left join sys_user u on a.seller_user_id = u.id
+		 left join bs_schedule_bus bus on bus.id = a.schedule_bus_id 
+		 left join bs_order od on od.id = a.order_id
+		 left join bs_station sta on sta.id = a.station_id
+		 left join bs_ticket_category cto on cto.id = a.ticket_category_id
+		 left join bs_schedule_bus_seats seat on seat.id = a.seat_id
+		<where>
+			<if test="orgId!=null and orgId!=''">
+				and a.org_id = #{orgId}
+			</if>
+			<if test="compId != null and compId != '' ">
+				and a.comp_id =#{compId}
+			</if>
+			<if test="sellerUserId != null and sellerUserId != '' ">
+				and a.seller_user_id =#{sellerUserId}
+			</if>
+			<if test="checkStatus !=null and checkStatus !=''">
+				and a.check_status = #{checkStatus}
+			</if>
+			<if test="sellerType != null and sellerType != '' ">
+				and a.seller_type =#{sellerType}
+			</if>
+			<if test="status !=null and status!=''">
+				and a.status = #{status}
+			</if>
+			<if test="name !=null and name !=''">
+				and (a.name = #{name} or a.id_card_no = #{name}) 
+			</if>
+			<if test="stationId != null and stationId != '' ">
+				and a.station_id =#{stationId}
+			</if>
+			<if test="spStartTime !=null and spStartTime != ''">
+				and a.create_time &gt;= #{spStartTime} 
+			</if>
+			<if test="spEndTime !=null and spEndTime != ''" >
+				and a.create_time &lt;= #{spEndTime} 
+			</if>
+			<if test="insuranceCode != null and insuranceCode != '' ">
+				and a.insurance_code =#{insuranceCode}
+			</if>
+			<if test="seatId != null and seatId != '' ">
+				and a.seat_id =#{seatId}
+			</if>
+			<if test="invoiceNo != null and invoiceNo != '' ">
+				and a.invoice_no like concat('%',#{invoiceNo},'%')
+			</if>
+			<if test="insuranceStatus !=null and insuranceStatus!='' ">
+				and a.insurance_status=#{insuranceStatus}
+			</if>
+			<if test="busCode != null and busCode != '' ">
+				and bus.bus_code =#{busCode}
+			</if>
+			<if test="runDate != null and runDate != '' ">
+				and bus.run_date =#{runDate}
+			</if>
+		</where>
+		ORDER BY a.create_time DESC
+	</select>
+	
+
+	<select id="selRefundPageList"
+	resultType="com.yxhl.stationbiz.system.domain.entity.ticket.Ticket">
+	SELECT
+	a.*,
+	b.run_date,<!--发车日期  -->
+	b.run_time,<!--发车时间  -->
+	g.bus_code,<!--班次号  -->
+	c.destination,<!--目的地名称  -->
+	b.run_status,<!--发班状态 -->
+	d.station_name,<!--售票点 -->
+	f.station_name start_station,<!--发车站 -->
+	h.ticket_cate_name,<!--车票类型 -->
+	c.children,<!--携童数 -->
+	'身份证' AS 'cardtype', <!--身份证-->
+	i.seat_num<!--座位号 -->
+	FROM
+	`bs_ticket` a
+	LEFT JOIN `bs_schedule_bus` b
+	ON a.schedule_bus_id = b.id
+	LEFT JOIN `bs_order` c
+	ON a.order_id = c.id
+	LEFT JOIN `bs_station` d
+	ON a.station_id = d.id
+	LEFT JOIN `bs_line` e
+	ON b.line_id = e.id
+	LEFT JOIN `bs_station` f
+	ON e.start_state_id = f.id
+	LEFT JOIN `bs_schedule_bus_tpl` g
+	ON b.schedule_tpl_id = g.id
+	LEFT JOIN `bs_ticket_category` h
+	ON a.ticket_category_id=h.id
+	LEFT JOIN `bs_schedule_bus_seats` i
+	ON a.seat_id=i.id
+	<where>
+		<if test="orgId!=null and orgId!=''">
+			and a.org_id = #{orgId}
+		</if>
+		<if test="compId != null and compId != '' ">
+			and a.comp_id =#{compId}
+		</if>
+		<if test="runDate != null and runDate != '' ">
+			and b.run_date =#{runDate}
+		</if>
+		<if test="invoiceNo !=null and invoiceNo !=''">
+			and a.invoice_no = #{invoiceNo}
+		</if>
+		<if test="busCode != null and busCode != '' ">
+			and g.bus_code =#{busCode}
+		</if>
+		<if test="idCardNo !=null and id_card_no!=''">
+			and a.id_card_no = #{idCardNo}
+		</if>
+		<if test="id !=null and id !=''">
+			and a.id = #{id}
+		</if>
+		<if test="insuranceCode !=null and insuranceCode !=''">
+			and a.insurance_code = #{insuranceCode}
+		</if>
+		<if test="seatNum !=null and seatNum !=''">
+			and i.seat_num = #{seatNum}
+		</if>
+	</where>
+	ORDER BY a.create_time DESC
+</select>
+	
+	<!-- 统计各个票种售票数 -->
+	<select id="statisticTCCount" resultType="com.yxhl.stationbiz.system.domain.response.StatisticTCResponse">
+		SELECT 
+		  ticket_category_id,
+		  COUNT(1) saleCount 
+		FROM
+		  `bs_ticket` 
+		WHERE check_schedule_bus_id = #{scheduleBusId} 
+		  AND STATUS = '1' 
+		GROUP BY ticket_category_id
+	</select>
+	
+	<!-- 售票模块/车票打印信息查询 -->
+	<select id="getcpdyList" resultType="com.yxhl.stationbiz.system.domain.entity.ticket.Ticket" parameterType="java.util.Map">
+		select a.*,u.user_name as sellerName,u.employ_id,bus.line_name,bus.run_date,bus.bus_code, 
+			bus.report_car_no,bus.run_time,od.start,od.destination,od.total_fee
+		from bs_ticket a
+		 left join sys_user u on a.seller_user_id = u.id
+		 left join bs_schedule_bus bus on bus.id = a.schedule_bus_id 
+		 left join bs_order od on od.id = a.order_id
+		<where>
+			<if test="orderId != null and orderId != '' ">
+				and a.order_id =#{orderId}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

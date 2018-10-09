@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.finance.BillEntryDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.finance.BillEntry">
+	SELECT a.*,b.user_name as receive_name,b.employ_id FROM `bs_bill_entry` a LEFT JOIN
+	`sys_user` b ON a.receive_user=b.`id` 
+		<where>
+		<if test="orgId!=null">
+		and a.org_id=#{orgId}
+		</if>
+		<if test="compId!=null">
+		and a.comp_id=#{compId}
+		</if>
+		<if test="startNum!=null">
+		and a.start_num like concat('%',#{startNum},'%')
+		</if>
+		<if test="endNum!=null">
+		and a.end_num like concat('%',#{endNum},'%')
+		</if>
+		<if test="billType!=null and  billType!=''">
+		and a.bill_type=#{billType}
+		</if>
+		<if test="status!=null">
+		and a.status=#{status}
+		</if> 
+		</where>
+		order by a.create_time desc
+	</select>
+</mapper>

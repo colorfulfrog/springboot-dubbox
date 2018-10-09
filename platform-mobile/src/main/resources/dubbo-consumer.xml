@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	
+	<dubbo:application name="platform-mobile" owner="platform-mobile"
+		organization="yxhl" logger="slf4j" />
+	
+	<dubbo:registry protocol="zookeeper" address="${DUBBO_ZK_URL}" client="curator" file="/alidata1/data/zookeeper/platform-mobile.cache" />
+	
+	<dubbo:consumer timeout="500000" retries="0" />
+	
+	<dubbo:reference id="projectService"
+		interface="com.yxhl.stationbiz.system.domain.service.ELProjectService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+		
+		<dubbo:reference id="organizationService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.OrganizationService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="companyService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.CompanyService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="regionService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.RegionService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="lineService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.LineService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+		
+	<dubbo:reference id="stationService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.StationService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	
+	<dubbo:reference id="configService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.ConfigService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+
+	<dubbo:reference id="userService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.UserService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="roleService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.RoleService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="resourceService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.ResourceService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+		
+	<dubbo:reference id="driverService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.DriverService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	
+	<dubbo:reference id="vehicleService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.VehicleService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	
+	<dubbo:reference id="operateLogService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.OperateLogService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	
+	<dubbo:reference id="driverVehicleService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.DriverVehicleService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+		
+	<dubbo:reference id="ticketGateService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.TicketGateService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	
+	<dubbo:reference id="busEntranceService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.BusEntranceService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="lineSiteService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.LineSiteService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+		
+	<dubbo:reference id="scheduleBusTplService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleBusTplService"
+		protocol="dubbo" retries="3" version="1.0.0" />					
+		
+	<dubbo:reference id="dictionaryService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.DictionaryService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+	<dubbo:reference id="scheduleLoopService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleLoopService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="scheduleBusSiteService"
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleBusSiteService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="relationService"
+		interface="com.yxhl.stationbiz.system.domain.service.sys.RelationService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="vehicleInstationService"
+		interface="com.yxhl.stationbiz.system.domain.service.security.VehicleInstationService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="holidayService"
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.HolidayService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+		
+	<dubbo:reference id="ticketCateValueService"
+	interface="com.yxhl.stationbiz.system.domain.service.schedule.TicketCateValueService"
+	protocol="dubbo" retries="3" version="1.0.0" />
+	
+	<dubbo:reference id="holidayPriceService"
+	interface="com.yxhl.stationbiz.system.domain.service.schedule.HolidayPriceService"
+	protocol="dubbo" retries="3" version="1.0.0" />
+		
+	<dubbo:reference id="vehicleSecurityCheckService"
+		interface="com.yxhl.stationbiz.system.domain.service.security.VehicleSecurityCheckService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+		
+	<dubbo:reference id="ticketCategoryService"
+	interface="com.yxhl.stationbiz.system.domain.service.schedule.TicketCategoryService"
+	protocol="dubbo" retries="3" version="1.0.0" />	
+	
+	<dubbo:reference id="basicPriceService"
+	interface="com.yxhl.stationbiz.system.domain.service.schedule.BasicPriceService"
+	protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="billEntryService"
+		interface="com.yxhl.stationbiz.system.domain.service.finance.BillEntryService"
+		protocol="dubbo" retries="3" version="1.0.0" />
+
+	<dubbo:reference id="ticketSellerBillService"
+		interface="com.yxhl.stationbiz.system.domain.service.finance.TicketSellerBillService"
+		protocol="dubbo" retries="3" version="1.0.0" />	
+	
+	<dubbo:reference id="vehicleOutboundCheckService"
+	interface="com.yxhl.stationbiz.system.domain.service.check.VehicleOutboundCheckService"
+	protocol="dubbo" retries="3" version="1.0.0" />
+	
+	<dubbo:reference id="paymentService"
+	interface="com.yxhl.stationbiz.system.domain.service.finance.PaymentService"
+	protocol="dubbo" retries="3" version="1.0.0" />
+		
+</beans>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.check.VehicleOutboundCheckDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.check.VehicleOutboundCheck">
+		SELECT ck.*,u.user_name as creator,uu.user_name as updater
+			FROM bs_vehicle_outbound_check ck 
+		 left join sys_user u on ck.create_by = u.id
+		 left join sys_user uu on ck.update_by = uu.id
+		<where>
+			<if test="checkType !=null and checkType !=''">
+				and ck.check_type = #{checkType} 
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				and ck.org_id = #{orgId}
+			</if>
+			<if test="compId != null and compId != '' ">
+				 and ck.comp_id =#{compId}
+			</if>
+		</where>
+		order by ck.create_time desc
+	</select>
+	
+	<!-- 查班次信息 -->
+	<select id="getBus" resultType="com.yxhl.stationbiz.system.domain.entity.check.VehicleOutboundCheck">
+		SELECT bus.id as scheduleBusId,bus.run_date,bus.line_name,bus.report_car_no,bus.bus_code,bus.bus_status,bus.run_time,bus.seats,bus.report_time,sta.station_name,
+				(SELECT SUM(od.children) FROM bs_order od WHERE od.schedule_bus_id = bus.id) AS children,
+				(SELECT COUNT(id) FROM bs_order od WHERE od.schedule_bus_id = bus.id) AS orderNum
+			FROM bs_schedule_bus bus
+		 left join bs_station sta on bus.report_sta_id = sta.id
+		<where>
+			<if test="orgId!=null and orgId!=''">
+				and bus.org_id = #{orgId}
+			</if>
+			<if test="compId != null and compId != '' ">
+				 and bus.comp_id =#{compId}
+			</if>
+			<if test="runDate != null and runDate != '' ">
+				and bus.run_date =#{runDate}
+			</if>
+			<if test="lineName !=null and lineName !=''">
+				and bus.line_name = #{lineName}
+			</if>
+			<if test="reportCarNo !=null and reportCarNo !=''">
+				and bus.report_car_no like concat('%',#{reportCarNo},'%')
+			</if>
+			and bus.check_status = 1
+		</where>
+	</select>
+	
+	<!-- 根据id查车辆稽查表-->
+	<select id="getOne" resultType="com.yxhl.stationbiz.system.domain.entity.check.VehicleOutboundCheck">
+		SELECT bus.run_date,bus.line_name,bus.report_car_no,bus.bus_code,bus.bus_status,bus.run_time,bus.seats,bus.report_time, 
+				ck.*,u.user_name as creator,uu.user_name as updater,sta.station_name,
+				(SELECT SUM(od.children) FROM bs_order od WHERE od.schedule_bus_id = bus.id) AS children,
+				(SELECT COUNT(id) FROM bs_order od WHERE od.schedule_bus_id = bus.id) AS orderNum
+			FROM bs_schedule_bus bus
+		 LEFT JOIN bs_vehicle_outbound_check ck ON bus.id = ck.schedule_bus_id
+		 left join sys_user u on ck.create_by = u.id
+		 left join sys_user uu on ck.update_by = uu.id
+		 left join bs_station sta on bus.report_sta_id = sta.id
+		 where bus.check_status = 1 and ck.id = #{vochekId}
+	</select>
+	
+	<!-- 根据班次id查车辆出站信息-->
+	<select id="getByBusId" resultType="com.yxhl.stationbiz.system.domain.entity.check.VehicleOutboundCheck">
+		SELECT bus.run_date,bus.line_name,bus.report_car_no,bus.bus_code,bus.bus_status,bus.run_time,bus.seats,bus.report_time, 
+				ck.*,u.user_name as creator,uu.user_name as updater,sta.station_name,
+				(SELECT SUM(od.children) FROM bs_order od WHERE od.schedule_bus_id = bus.id) AS children,
+				(SELECT COUNT(id) FROM bs_order od WHERE od.schedule_bus_id = bus.id) AS orderNum
+			FROM bs_schedule_bus bus
+		 LEFT JOIN bs_vehicle_outbound_check ck ON bus.id = ck.schedule_bus_id
+		 left join sys_user u on ck.create_by = u.id
+		 left join sys_user uu on ck.update_by = uu.id
+		 left join bs_station sta on bus.report_sta_id = sta.id
+		 where bus.check_status = 1 and bus.id = #{busId} and ck.check_type = 1
+	</select>
+	
+	<!-- 根据班次id查询出站信息 -->
+	<select id="selByScheduleIds" parameterType="list" resultType="com.yxhl.stationbiz.system.domain.entity.check.VehicleOutboundCheck">
+		SELECT c.*,u.`user_name` creator FROM `bs_vehicle_outbound_check` c LEFT JOIN `sys_user` u ON c.`create_by`=u.`id`
+		<where>
+			c.check_type=1
+		 	and c.`schedule_bus_id` in
+		 	<foreach item="item" collection="list" separator="," open="(" close=")" index="index">    
+		      #{item}    
+		    </foreach>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.sys.OperateLogDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.sys.OperateLog">
+		select a.*,u.user_name as creator from sys_operate_log a
+		left join sys_user u on a.create_by = u.id
+		<where>
+			<if test="userName != null and userName != '' ">
+				and u.user_name like concat('%',#{userName},'%')
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				and a.create_time &gt;=#{startTime}
+			</if>
+			<if test="endTime != null and endTime != '' ">
+				and a.create_time &lt;=#{endTime}
+			</if>
+			<if test="content != null and content != '' ">
+				and a.content like concat('%',#{content},'%')
+			</if>
+			<if test="ip != null and ip != '' ">
+				and a.ip like concat('%',#{ip},'%')
+			</if>
+			<if test="module != null and module != '' ">
+				and a.module like concat('%',#{module},'%')
+			</if>
+		</where>
+		order by a.create_time desc
+	</select>
+	
+	
+	<select id="exportData" resultType="com.yxhl.stationbiz.system.domain.entity.sys.OperateLog">
+		select a.*,u.user_name as creator from sys_operate_log a
+		left join sys_user u on a.create_by = u.id
+		<where>
+			<if test="userName != null and userName != '' ">
+				and u.user_name like concat('%',#{userName},'%')
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				and a.create_time &gt;=#{startTime}
+			</if>
+			<if test="endTime != null and endTime != '' ">
+				and a.create_time &lt;=#{endTime}
+			</if>
+			<if test="content != null and content != '' ">
+				and a.content like concat('%',#{content},'%')
+			</if>
+			<if test="ip != null and ip != '' ">
+				and a.ip like concat('%',#{ip},'%')
+			</if>
+			<if test="module != null and module != '' ">
+				and a.module like concat('%',#{module},'%')
+			</if>
+		</where>
+		order by a.create_time desc
+	</select>
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.schedule.ExecPriceDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.ExecPrice">
+		select * from bs_exec_price
+		<where>
+			<!-- 条件 -->
+		</where>
+		order by create_time desc
+	</select>
+	
+	
+		<select id="selExecPrice" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.ExecPrice">
+			SELECT ep.*,bs1.station_name on_sta_name,bs2.station_name off_sta_name ,sbs.allow_ticket_flag,sbs.`run_time`,ls.start_station_distance,ls.`settlement_distance`
+			FROM bs_exec_price  ep
+			LEFT JOIN bs_station bs1 ON ep.on_sta_id=bs1.id
+			LEFT JOIN bs_station bs2 ON ep.off_sta_id=bs2.id
+			LEFT JOIN bs_schedule_bus sb ON sb.`id`=ep.`schedule_bus_id`
+			LEFT JOIN bs_schedule_bus_site sbs ON sbs.`station_id`=ep.`off_sta_id` AND sb.schedule_tpl_id=sbs.`schedule_bus_tpl_id` 
+			LEFT JOIN bs_line_site ls ON  ls.`station_id`=ep.`off_sta_id` AND sb.`line_id` =ls.`line_id`
+		<where>
+			<if test="scheduleBusId != null and scheduleBusId !='' ">
+			  and ep.schedule_bus_id=#{scheduleBusId} 
+			</if>
+			order by ep.seat_cate, ep.seats
+		</where>
+		
+	</select>
+	
+	
+	
+	<!-- <select id="selExecPriceBy" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.ExecPrice">
+			SELECT ep.*,bs1.station_name on_sta_name,bs2.station_name off_sta_name ,sbs.allow_ticket_flag,sbs.`run_time`,ls.start_station_distance,ls.`settlement_distance`
+			FROM bs_exec_price  ep
+			LEFT JOIN bs_station bs1 ON ep.on_sta_id=bs1.id
+			LEFT JOIN bs_station bs2 ON ep.off_sta_id=bs2.id
+			LEFT JOIN bs_schedule_bus sb ON sb.`id`=ep.`schedule_bus_id`
+			LEFT JOIN bs_schedule_bus_site sbs ON sbs.`station_id`=ep.`off_sta_id` AND sb.schedule_tpl_id=sbs.`schedule_bus_tpl_id` 
+			LEFT JOIN bs_line_site ls ON  ls.`station_id`=ep.`off_sta_id` AND sb.`line_id` =ls.`line_id`
+		<where>
+			<if test="scheduleBusId != null and scheduleBusId !='' ">
+			  and ep.schedule_bus_id=#{scheduleBusId} 
+			</if>
+			<if test="seatCate != null and seatCate !='' ">
+			  and ep.seat_cate=#{seatCate} 
+			</if>
+			<if test="seats != null and seats !='' ">
+			  and ep.seats=#{seats} 
+			</if>
+		</where>
+	</select> -->
+	
+	
+	<select id="selExecPriceBy" resultType="com.yxhl.stationbiz.system.domain.entity.schedule.TicketCateValue">
+				SELECT btc.ticket_cate_name,tcv.*
+				FROM bs_exec_price ep 
+				JOIN bs_schedule_bus sb ON sb.`id`=ep.`schedule_bus_id` 
+				JOIN bs_ticket_cate_value tcv ON ep.id=tcv.price_id AND price_tbl_type=3
+				JOIN bs_ticket_category btc ON btc.id=tcv.ticket_cate_id
+		<where>
+			<if test="scheduleBusId != null and scheduleBusId !='' ">
+			  and ep.schedule_bus_id=#{scheduleBusId} 
+			</if>
+			<if test="seatCate != null and seatCate !='' ">
+			  and ep.seat_cate=#{seatCate} 
+			</if>
+			<if test="seats != null and seats !='' ">
+			  and ep.seats=#{seats} 
+			</if>
+		</where>
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,19 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[请求]%n%fullRequest%n[响应]%n%fullResponse</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/alidata1/zw/logs/platform-web_access.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/alidata1/zw/logs/platform-web_access.%d{yyyy-MM-dd}.log</fileNamePattern>
+		</rollingPolicy>
+        <encoder>
+            <pattern>[请求]%n%fullRequest%n[响应]%n%fullResponse</pattern>
+        </encoder>
+    </appender>
+
+    <appender-ref ref="FILE"/>
+</configuration>

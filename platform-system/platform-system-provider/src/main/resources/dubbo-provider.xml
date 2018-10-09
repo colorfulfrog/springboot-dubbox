@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:application name="platform-system-provider" owner="platform-system-provider" organization="yxhl" logger="slf4j"/>
+	<dubbo:registry protocol="zookeeper" address="${DUBBO_ZK_URL}" client="curator" file="/alidata1/data/zookeeper/platform-system-provider.cache"/>
+
+	<dubbo:provider timeout="1200000" loadbalance="leastactive"
+		retries="0" cluster="failfast" />
+	<dubbo:protocol name="dubbo" port="21880"/>
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.ELProjectService"
+		ref="projectService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+	
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.sys.OrganizationService"
+		ref="organizationService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.sys.CompanyService"
+		ref="companyService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.RegionService"
+		ref="regionService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.basicinfo.LineService"
+		ref="lineService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.StationService"
+		ref="stationService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.sys.ConfigService"
+		ref="configService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+
+
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.sys.UserService"
+		ref="userService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.sys.RoleService"
+		ref="roleService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.sys.ResourceService"
+		ref="resourceService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.DriverService"
+		ref="driverService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.VehicleService"
+		ref="vehicleService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.sys.OperateLogService"
+		ref="operateLogService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+	
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.DriverVehicleService"
+		ref="driverVehicleService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+	
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.TicketGateService"
+		ref="ticketGateService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.BusEntranceService"
+		ref="busEntranceService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+	
+
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.LineSiteService"
+		ref="lineSiteService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleBusTplService"
+		ref="scheduleBusTplService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />		
+
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.sys.DictionaryService"
+		ref="dictionaryService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleLoopService"
+		ref="scheduleLoopService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleLoopBusService"
+		ref="scheduleLoopBusService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.basicinfo.ScheduleBusSiteService"
+		ref="scheduleBusSiteService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.sys.RelationService"
+		ref="relationService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+			<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.security.VehicleInstationService"
+		ref="vehicleInstationService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+			<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.HolidayService"
+		ref="holidayService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+			<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.TicketCateValueService"
+		ref="ticketCateValueService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+		<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.HolidayPriceService"
+		ref="holidayPriceService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.security.VehicleSecurityCheckService"
+		ref="vehicleSecurityCheckService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.TicketCategoryService"
+		ref="ticketCategoryService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.schedule.BasicPriceService"
+		ref="basicPriceService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.finance.BillEntryService"
+		ref="billEntryService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.finance.TicketSellerBillService"
+		ref="ticketSellerBillService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+	
+	<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.check.VehicleOutboundCheckService"
+		ref="vehicleOutboundCheckService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+		<dubbo:service
+		interface="com.yxhl.stationbiz.system.domain.service.finance.PaymentService"
+		ref="paymentService" protocol="dubbo" executes="10000" actives="1000"
+		version="1.0.0" />
+		
+</beans>

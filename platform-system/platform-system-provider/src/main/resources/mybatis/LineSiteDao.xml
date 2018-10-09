@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.LineSiteDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.LineSite">
+		select ls.*,bs.station_name site_name from bs_line_site ls
+		left join bs_station bs on ls.station_id=bs.id 
+		<where>
+			<if test="lineId != null">
+				  AND ls.line_id=#{lineId}
+			</if>
+			
+			
+		</where>
+		order by sort
+	</select>
+	
+	<select id="selList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.LineSite">
+		select ls.*,bs.station_name site_name from bs_line_site ls
+		left join bs_station bs on ls.station_id=bs.id 
+		<where>
+			<if test="lineId != null">
+				  AND ls.line_id=#{lineId}
+			</if>
+			
+		</where>
+		order by sort
+	</select>
+	
+	
+	
+	<select id="selOne" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.LineSite">
+		select ls.*,bs.station_name site_name from bs_line_site ls
+		left join bs_station bs on ls.station_id=bs.id 
+		<where>
+			<if test="id != null">
+				  AND ls.id=#{id}
+			</if>
+			
+		</where>
+	</select>
+	
+	
+	<select id="selSortMaxSite" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.LineSite">
+		<![CDATA[
+			SELECT * FROM bs_line_site WHERE line_id=#{lineId} and sort=(SELECT  MAX(sort) FROM  bs_line_site WHERE line_id=#{lineId} and  sort<#{sort} ) LIMIT 1
+		]]>
+	</select>
+	
+	<select id="selSortMinSite" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.LineSite">
+		<![CDATA[
+			SELECT * FROM bs_line_site WHERE line_id=#{lineId} and sort=(SELECT  MIN(sort) FROM  bs_line_site WHERE line_id=#{lineId} and sort>#{sort} ) LIMIT 1
+		]]>
+	</select>
+	
+</mapper>

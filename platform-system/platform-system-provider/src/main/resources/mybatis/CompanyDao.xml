@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.sys.CompanyDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.sys.Company">
+		SELECT * FROM (SELECT a.*,b.region_name AS areaName, c.full_name AS orgName,d.user_name AS createName,e.user_name AS updateName FROM sys_company  a LEFT JOIN bs_region b ON a.area_id=b.`id`  LEFT JOIN  `sys_organization` c ON a.org_id=c.id LEFT JOIN `sys_user` d ON a.`create_by`=d.`id` LEFT JOIN  
+		`sys_user` e ON a.`update_by`=e.`id`) a
+		<where>
+		1=1
+			<if test="fullName != null and fullName !=''">
+			and	a.full_name like concat('%',#{fullName},'%')
+			</if>
+			<if test="companyCode != null and companyCode != ''">
+			and	a.company_code like concat('%',#{companyCode},'%')
+			</if>
+			<if test="areaId != null and areaId != ''">
+			and	a.area_id =#{areaId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+			and	a.org_id =#{orgId}
+			</if>
+			<if test="shortSpell != null and shortSpell != ''">
+			and	a.short_spell like concat('%',#{shortSpell},'%')
+			</if>
+		</where>
+		order by a.create_time desc
+	</select>
+	
+	<select id="exportData" resultType="com.yxhl.stationbiz.system.domain.entity.sys.Company">
+		SELECT * FROM (SELECT a.*,b.region_name AS areaName, c.full_name AS orgName,d.user_name AS createName,e.user_name AS updateName FROM sys_company  a LEFT JOIN bs_region b ON a.area_id=b.`id`  LEFT JOIN  `sys_organization` c ON a.org_id=c.id LEFT JOIN `sys_user` d ON a.`create_by`=d.`id` LEFT JOIN  
+		`sys_user` e ON a.`update_by`=e.`id`) a
+		<where>
+		1=1
+			<if test="fullName != null and fullName !=''">
+			and	a.full_name like concat('%',#{fullName},'%')
+			</if>
+			<if test="companyCode != null and companyCode != ''">
+			and	a.company_code like concat('%',#{companyCode},'%')
+			</if>
+			<if test="areaId != null and areaId != ''">
+			and	a.area_id =#{areaId}
+			</if>
+			<if test="shortSpell != null and shortSpell != ''">
+			and	a.short_spell like concat('%',#{fullName},'%')
+			</if>
+		</where>
+		order by a.create_time desc
+	</select>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.schedule.ScheduleBusService"
+		ref="scheduleBusService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.schedule.ExecPriceService"
+		ref="execPriceService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+		
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.ticket.ScheduleBusSeatsService"
+		ref="scheduleBusSeatsService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.ticket.TicketService"
+		ref="ticketService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.schedule.ScheduleBusStowageService"
+		ref="scheduleBusStowageService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+	<dubbo:service interface="com.yxhl.stationbiz.system.domain.service.ticket.OrderService"
+		ref="orderService" protocol="dubbo" executes="10000"
+		actives="1000" version="1.0.0" />
+</beans>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxhl.stationbiz.system.provider.dao.basicinfo.BusEntranceDao">
+	
+	<select id="selPageList" resultType="com.yxhl.stationbiz.system.domain.entity.basicinfo.BusEntrance">
+		SELECT 
+		  g.*,
+		  s.`station_name`,
+		  u1.`user_name` creator,
+		  u2.`user_name` updater 
+		FROM
+		  bs_bus_entrance g 
+		  LEFT JOIN bs_station s 
+		    ON g.`station_id` = s.`id` 
+		  LEFT JOIN sys_user u1 
+		    ON g.`create_by` = u1.`id` 
+		  LEFT JOIN sys_user u2 
+		    ON g.`update_by` = u2.`id` 
+		<where>
+			<if test="entranceName !=null and entranceName != ''">
+		  		INSTR(g.`entrance_name`, #{entranceName}) > 0
+			</if>
+			<if test="stationId !=null and stationId != ''">
+		  		and g.station_id=#{stationId}
+			</if>
+			<if test="stationName !=null and stationName != ''">
+		  		AND INSTR(s.`station_name`, #{stationName}) > 0 
+			</if>
+			<if test="orgId !=null and orgId !=''">
+		  		and g.org_id=#{orgId}
+			</if>
+			<if test="compId !=null and compId !=''">
+		  		and g.comp_id=#{compId}
+			</if>
+		</where>
+		order by g.create_time desc
+	</select>
+</mapper>
