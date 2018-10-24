@@ -9,6 +9,9 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JWT工具类
@@ -22,20 +25,22 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 public class JwtUtils {
     /**
      * 生成jwt token
-     * @param key 签发标识
+     * @param object 自定义数据
      * @param secret 秘钥 
      * @param expireTime 过期时间
      * @return token
      */
-    public static String createToken(String key,final String secret,Date expireTime){
+    public static <T> String createToken(T object,final String secret,Date expireTime){
         long nowMillis = System.currentTimeMillis();
         Date now=new Date(nowMillis);//签发时间精度:毫秒
         try {
+        	String jsonString = JsonMapper.toJsonString(object);
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-            		.withIssuer(key)
+            		.withIssuer("YXHL")
             		.withIssuedAt(now)
             		.withExpiresAt(expireTime)
+            		.withClaim("object", jsonString)
             		.sign(algorithm);
         } catch (JWTCreationException exception){
             exception.printStackTrace();
@@ -48,34 +53,42 @@ public class JwtUtils {
      * @param key 签发标识
      * * @param secret 秘钥 
      * @param token 需要验证的token
-     * @return true：token有效，false：token无效
+     * @return t 
      */
-    public static boolean verifyToken(String key,final String secret,String token){
-        boolean active = true;
+    public static <T> T verifyToken(final String secret,String token,Class<T> cls){
+        T t = null;
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);//声明签名所用的算法和秘钥
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(key).build();
-            verifier.verify(token);
+            JWTVerifier verifier = JWT.require(algorithm)
+            		.withIssuer("YXHL")
+            		.build();
+            DecodedJWT verify = verifier.verify(token);
+            String jsonString = verify.getClaim("object").asString();
+            t = JsonMapper.fromJsonString(jsonString, cls);
         } catch (TokenExpiredException exception){
             //System.out.println("--- token 过期");
-            active = false;
+        	exception.printStackTrace();
         } catch (JWTDecodeException exception){
             //System.out.println("--- token 无效");
-            active = false;
+        	exception.printStackTrace();
         } catch (JWTVerificationException exception){
             //System.out.println("--- token 错误");
-            active = false;
+        	exception.printStackTrace();
         }
-        return active;
+        return t;
     }
-
+    
     public static void main(String[] args) {
+    	User user = new User();
+    	user.setName("liwei");
+    	user.setAge(20);
+    	
     	//生成token：
-        String token=createToken("liwei","master",DateHelper.parseDate("2018-10-24 10:05:00"));
-        System.out.println(token);
+        //String token=createToken(user,"master",DateHelper.parseDate("2018-10-24 15:30:00"));
+        //System.out.println(token);
         
         //验证token
-        boolean flag = verifyToken("liwei","master",token);
+        User flag = verifyToken("master","eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJZWEhMIiwiZXhwIjoxNTQwMzY2MjAwLCJpYXQiOjE1NDAzNjYwNzMsIm9iamVjdCI6IntcIm5hbWVcIjpcImxpd2VpXCIsXCJhZ2VcIjoyMH0ifQ.xmaW2QzpYz2QiQfAd4h4CJTXrl998AFmfAiYeux2qEs",User.class);
         System.out.println(flag);
     }
 }
