@@ -1,9 +1,9 @@
 spring:
   redis:
     database: 2
-    host: 192.168.1.236
+    host: 127.0.0.1
     port: 6379
-    password: YueXingHuLian@45435361094
+    password: 
     timeout: 0
     pool:
       max-active: 300
@@ -28,14 +28,14 @@ server:
       debug: true #请求响应数据调试
   use-forward-headers: true
   
-DUBBO_ZK_URL: 192.168.1.234:2183
+DUBBO_ZK_URL: 127.0.0.1:2183
 
 #oss 配置
 aliyun: 
   oss: 
-    endpoint: http://oss-cn-beijing.aliyuncs.com
-    osswebsite: https://yxstation.oss-cn-beijing.aliyuncs.com/
-    accessKeyId: LTAIVrykmcNc7Gxv
-    accessKeySecret: fQkUARpDbq5DNVcxjKmY68KTsiba6R
-    bucketName: yxstation
-    testBucket: files
+    endpoint: 
+    osswebsite:
+    accessKeyId: 
+    accessKeySecret: 
+    bucketName: 
+    testBucket: 
